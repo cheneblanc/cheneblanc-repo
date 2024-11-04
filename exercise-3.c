@@ -18,21 +18,23 @@
 /* For each trial, check each digit and reject if any of them are X */
 /* Check if a digit is X by doing modulo 10 maths */
 
-bool isOneDigitEqualtoX (int candidate, int X){
-    int check = candidate;
-    while((check > 0)){
-        int digit = check % 10;
-        if (digit == X){
+bool isOneDigitEqualtoX (int candidate, int x){
+    while((candidate > 0)){
+        int digit = candidate % 10;
+        if (digit == x){
             return true;
         }
-        check = check/10;
+        candidate = candidate/10;
     }
     return false;
 }
 
 /* Approach: try A=1 & B=(N-1), A=2 & B= (N-2) etc. */
 
-void removeDigit (int n, int x, int *a_pt, int *b_pt){
+void removeDigit (int x, int n, int* a_pt, int* b_pt){
+    if((n<10) || (n>100000000) || (x<0) || (x>9) || !a_pt || !b_pt){
+        return;
+    }
     for (int i = 1; i < n; i++)
     {
         int candidateA=n-i;
@@ -46,11 +48,11 @@ void removeDigit (int n, int x, int *a_pt, int *b_pt){
 }
 
 int main (void){
-    int n = 650;
-    int x =1;
-    int a;
-    int b;
-    removeDigit (n, x, &a, &b);
+    int n = 99999999;
+    int x =9;
+    int a =0;
+    int b =0;
+    removeDigit (x, n, &a, &b);
     printf("helloworld/n");
     printf("%d and %d sum to %d and do not contain %d\n", a, b, n, x);
 }

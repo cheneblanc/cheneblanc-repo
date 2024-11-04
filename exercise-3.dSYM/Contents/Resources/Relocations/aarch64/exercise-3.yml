@@ -1,5 +1,5 @@
 ---
 triple:          'arm64-apple-darwin'
-binary-path:     '/Users/nigel/Documents/C Projects/CW1/exercise-3'
+binary-path:     '/Users/nigel/Documents/GitHub/week-4/exercise-3'
 relocations:     []
 ...

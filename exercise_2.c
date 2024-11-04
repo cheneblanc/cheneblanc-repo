@@ -50,6 +50,7 @@ The period length has to be greater than zero. If the periodic shift is 0 then i
 /* Need a procedure to shift the letter, which takes as the input the Nth character, 
 and shifts it by the current amount of the total shift
 Use ASCII values of the letters to perform this. Be careful around the edges*/
+/* A = 65 in ASCII; Z = 90 If the coded letter is greater than 90*/
 /* Need a procedure to update the total shift every period length, but the periodic shift*/
 /* Probably a good idea to keep the total shift bounded to avoid it getting too big: loop it around once it gets over 26*/
 /* Start by building the encoder for a single letter with a fixed, static amount of shift*/
@@ -59,3 +60,29 @@ Use ASCII values of the letters to perform this. Be careful around the edges*/
 /* Be esepcially careful to test A and Z, or letters that should convert to A or Z (or loop round)*/
 /* Ensure we don't accept negative values for the intial and perdiodic shifts */
 
+
+void encrypt_alberti(const char *message, int initial_shift, int periodic_shift, int period_length){
+    if(initial_shift<0 || periodic_shift<0 || period_length <=0 || strlen(message)==0){
+        return;
+    }
+    for (int i = 0; i < strlen(message); i++)
+    {
+        int periods = i/period_length;
+        int offset = initial_shift + periodic_shift * periods;
+        char uncodedLetter = message[i];
+        int shift = uncodedLetter + offset;
+        if(shift>90){
+            shift=((shift - 90)%26)+64;
+        }
+        char codedLetter = shift;
+        printf("%c", codedLetter);
+    }
+}
+
+ int main (void){
+    int initial_shift=260000001;
+    int periodic_shift=260000000;
+    int period_length=4;
+    char message[10000]="AAAAAAAAAA";
+    encrypt_alberti(message, initial_shift, periodic_shift, period_length);
+} 
