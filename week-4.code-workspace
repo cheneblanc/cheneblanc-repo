@@ -2,6 +2,7 @@
 	"folders": [
 		{
 			"name": "week-4",
+			"python.pythonPath": "/usr/bin/python3",
 			"path": "."
 		}
 	],
