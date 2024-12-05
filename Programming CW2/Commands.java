@@ -52,50 +52,56 @@ public class Commands {
 
                 if (command.equals("MOVE N")) {
                     if (player.location.getLocation().getY() == 0){    
-                        System.out.println("Invalid Move");
+                        System.out.println("Fail");
                     }
                     else{    
                         player.location.move("N");
                     }
                     if (board.getTile(player.location.getLocation()).isWalkable() == false) {
-                        player.location.move("S");
+                        player.location.move("S")
+                        System.out.println("Fail");
                     }
                 }
                 if (command.equals("MOVE S")) {
                     if (player.location.getLocation().getY() == board.getHeight()-1) {
-                        System.out.println("Invalid Move");
+                        System.out.println("Fail");
                     }
                     else{
                         player.location.move("S");  
                     }
                     if (board.getTile(player.location.getLocation()).isWalkable() == false) {
-                        player.location.move("N");
+                        player.location.move("N")
+                        System.out.println("Fail");
+
                     }
                 }
                 if (command.equals("MOVE E")) {
                     if (player.location.getLocation().getX() == board.getWidth()-1) {
-                        System.out.println("Invalid Move");
+                        System.out.println("Fail");
                     }
                     else{
                         player.location.move("E");
                     }
                     if (board.getTile(player.location.getLocation()).isWalkable() == false) {
-                        player.location.move("W");
+                        player.location.move("W")
+                        System.out.println("Fail");
                     }
                 }
                 if (command.equals("MOVE W")) {
                     if (player.location.getLocation().getX() == 0) {
-                        System.out.println("Invalid Move");
+                        System.out.println("Fail");
                     }
                     else{
                         player.location.move("W");
                     }
                     if (board.getTile(player.location.getLocation()).isWalkable() == false) {
-                        player.location.move("E");
+                        player.location.move("E")
+                        System.out.println("Fail");
                     } 
                 }
                 if (command.equals("LOOK")) {
-                    board.printBoard(player, player.location.getLocation());
+                    board.printBoard(player, player.location.getLocation())
+                    System.out.println("Fail");
                 }
             }
             else {
