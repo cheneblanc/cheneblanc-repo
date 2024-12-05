@@ -21,7 +21,9 @@ public class Game {
             /* Refactor this using an enum */
             /* Move this all into a seperate class */
 
-            String command = getInput();
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter a command: ");
+            String command = scanner.nextLine().toUpperCase();
 
             if (command.equals("PICKUP") || command.equals("MOVE N") || command.equals("MOVE S") || command.equals("MOVE E") || command.equals("MOVE W") || command.equals("HELLO") || command.equals("GOLD") || command.equals("QUIT") || command.equals("LOOK")) {
             
@@ -34,7 +36,7 @@ public class Game {
                         System.out.println("Fail");
                     }
                 }
-                
+
                 if (command.equals("HELLO")) {
                     System.out.println("Gold to win: " + getWinningGold());
                 }
@@ -79,7 +81,7 @@ public class Game {
                 System.out.println("LOSE");
                 System.exit(0);
                 }
-
+        scanner.close();
         }
     }
 
@@ -87,18 +89,6 @@ public class Game {
 
     private int getWinningGold() {
         return WINNINGGOLD;
-    }
-
-/* Get input from the player */
-
-    private String getInput() {
-
-        /* Add lots of validation into here so that it is only capable of returning valid values */
-
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter a command: ");
-        String command = scanner.nextLine().toUpperCase();
-        return command;
     }
 
 /* Condition for winning the game */
