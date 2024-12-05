@@ -57,6 +57,9 @@ public class Commands {
                     else{    
                         player.location.move("N");
                     }
+                    if (board.getTile(player.location.getLocation()).isWalkable() == false) {
+                        player.location.move("S");
+                    }
                 }
                 if (command.equals("MOVE S")) {
                     if (player.location.getLocation().getY() == board.getHeight()-1) {
@@ -64,6 +67,9 @@ public class Commands {
                     }
                     else{
                         player.location.move("S");  
+                    }
+                    if (board.getTile(player.location.getLocation()).isWalkable() == false) {
+                        player.location.move("N");
                     }
                 }
                 if (command.equals("MOVE E")) {
@@ -73,6 +79,9 @@ public class Commands {
                     else{
                         player.location.move("E");
                     }
+                    if (board.getTile(player.location.getLocation()).isWalkable() == false) {
+                        player.location.move("W");
+                    }
                 }
                 if (command.equals("MOVE W")) {
                     if (player.location.getLocation().getX() == 0) {
@@ -80,7 +89,10 @@ public class Commands {
                     }
                     else{
                         player.location.move("W");
-                    }    
+                    }
+                    if (board.getTile(player.location.getLocation()).isWalkable() == false) {
+                        player.location.move("E");
+                    } 
                 }
                 if (command.equals("LOOK")) {
                     board.printBoard(player, player.location.getLocation());

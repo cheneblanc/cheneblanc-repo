@@ -162,7 +162,8 @@ def populateTables():
 def getPilot():
         while True:
                 try:
-                        pilot_id = int(input("Enter the pilot ID: "))
+                        viewAllPilots()
+                        pilot_id = int(input("Enter the pilot ID from the options above: "))
                         rows = cursor.execute("SELECT * FROM pilots WHERE pilot_id = ?", (pilot_id,)).fetchall()
                         if not rows:
                                 print("No such pilot exists")
@@ -176,12 +177,17 @@ def getPilot():
 
 def getDestination(old_new):
         while True:
-                dest = str(input ("Enter airport IATA code: ")).upper()
-                if not (dest.isalpha() and len(dest) == 3):
-                        print("Please enter a three-letter airport code (e.g. JFK)")
-                        continue
+                
                 if old_new == "old":
                         try: 
+                                print("Enter one of the following IATA codes for the destination you want to delete: ")
+                                rows = cursor.execute("SELECT IATA_code FROM destinations").fetchall()
+                                column_names = [description[0] for description in cursor.description]
+                                print(tabulate(rows, headers=column_names))
+                                dest = str(input ("Enter IATA code: ")).upper()
+                                if not (dest.isalpha() and len(dest) == 3):
+                                        print("Please enter a three-letter airport code (e.g. JFK)")
+                                        continue
                                 rows = cursor.execute("SELECT * FROM destinations WHERE IATA_code = ?", (dest,)).fetchall()     
                                 if not rows:
                                         print(f"No such destination {dest}")
@@ -191,6 +197,10 @@ def getDestination(old_new):
                                         break
                 elif old_new == "new":
                         try:
+                                dest = str(input ("Enter airport IATA code: ")).upper()
+                                if not (dest.isalpha() and len(dest) == 3):
+                                        print("Please enter a three-letter airport code (e.g. JFK)")
+                                        continue
                                 rows = cursor.execute("SELECT * FROM destinations WHERE IATA_code = ?", (dest,)).fetchall()     
                                 if rows:
                                         print(f"{dest} already exists as a destination")
@@ -207,7 +217,8 @@ def getDestination(old_new):
 def getFlight():
         while True:
                 try:
-                        flight_id = int(input("Enter the flight ID: "))
+                        viewAllFlights()
+                        flight_id = int(input("Enter the flight ID from the options above: "))
                         rows = cursor.execute("SELECT * FROM flights WHERE flight_id = ?", (flight_id,)).fetchall()
                         if not rows:
                                 print("No such flight exists")
@@ -246,7 +257,10 @@ def getDateTime():
 def getStatus():
         while True:
                 try:
-                        status_id = int(input("Enter the status ID: "))
+                        rows = cursor.execute("SELECT * FROM status").fetchall()
+                        column_names = [description[0] for description in cursor.description]
+                        print(tabulate(rows, headers=column_names))
+                        status_id = int(input("Enter the status ID from the options above: "))
                         rows = cursor.execute("SELECT * FROM status WHERE status_id = ?", (status_id,)).fetchall()
                         if not rows:
                                 print("No such status exists")
@@ -263,7 +277,10 @@ def getStatus():
 def getRoute():
         while True:
                 try:
-                        route_id = int(input("Enter the route ID: "))
+                        rows = cursor.execute("SELECT * FROM routes").fetchall()
+                        column_names = [description[0] for description in cursor.description]
+                        print(tabulate(rows, headers=column_names))
+                        route_id = int(input("Enter the route ID from the options above: "))
                         rows = cursor.execute("SELECT * FROM routes WHERE route_id = ?", (route_id,)).fetchall()
                         if not rows:
                                 print("No such route exists")
@@ -322,7 +339,49 @@ def addFlight():
         assignPilotToFlight()
         return
 
+# Deletes a flight from the database
+
+def deleteFlight():
+        print("Delete Flight")
+        deleted_flight = getFlight()
+        cursor.execute("DELETE FROM flights WHERE flight_id = ?", (deleted_flight,))
+        print("You have deleted flight " + str(deleted_flight))
+        return
+
+# Allows user to update a flight's status and times (not route)
+def updateFlights():
+        print("Please enter the flight ID of the flight you want to update")
+        changed_flight = getFlight()
+        print("Please enter the new flight status: ")
+        stat = getStatus()
+        print("Please enter the new departure date and time: ")
+        new_dep_time = getDateTime()
+        print("Please enter the new arrival date and time: ")
+        new_arr_time = getDateTime()
+        while True:
+                try:
+                        cursor.execute( "UPDATE flights SET status_id = ?, departure_time = ?, arrival_time =? WHERE flight_id = ?", (stat, new_dep_time, new_arr_time, changed_flight,))
+                        rows = cursor.execute("SELECT f.flight_id AS ID, r.departure_destination AS 'from', f.departure_time AS dep, r.arrival_destination AS 'to', f.arrival_time AS arr, s.status AS stat FROM flights as f INNER JOIN routes as r on f.route_id=r.route_id INNER JOIN status as s on f.status_id = s.status_id WHERE f.flight_id = ?", (changed_flight,)).fetchall()
+                        column_names = [description[0] for description in cursor.description]
+                        print(column_names)
+                        print(rows)
+                except Exception as e:
+                        print(f"Error! {e}")
+                        return 
+# Shows users all flights in the database
+
+def viewAllFlights():
+        while True:
+                try:
+                        rows = cursor.execute("SELECT f.flight_id AS ID, r.departure_destination AS 'from', f.departure_time AS dep, r.arrival_destination AS 'to', f.arrival_time AS arr, s.status AS stat FROM flights as f INNER JOIN routes as r on f.route_id=r.route_id INNER JOIN status as s on f.status_id = s.status_id").fetchall()
+                        column_names = [description[0] for description in cursor.description]
+                        print(tabulate(rows, headers=column_names))
+                        return
+                except Exception as e:
+                        print(f"Error {e}")
+
 # Shows users flights that are arriving to from a particular airport         
+
 def viewFlightsByArrivalLocation():
         while True:
                 dest = getDestination("old")
@@ -341,6 +400,8 @@ def viewFlightsByArrivalLocation():
 
 # Shows users flights that are leaving from a particular departure airport         
 def viewFlightsByDepartureLocation():
+        print("View Flights by Departure Location")
+        
         while True:
                 dest = getDestination("old")      
                 try:
@@ -354,48 +415,36 @@ def viewFlightsByDepartureLocation():
                                 return
                 except Exception as e:
                         print(f"An error occurred: {e}")
-                        break
 
-# Shows users flights that are leaving on a particular date            
+# Shows users flights that are leaving on a particular date
+#           
 def viewFlightsByDepartureDate():
+        print("View Flights by Departure Date")
         date = getDateTime()
-        try:
-                rows = cursor.execute("SELECT f.flight_id AS ID, r.departure_destination AS 'from', f.departure_time AS dep, r.arrival_destination AS 'to', f.arrival_time AS arr, s.status AS stat FROM flights as f INNER JOIN routes as r on f.route_id=r.route_id LEFT JOIN status as s on f.status_id = s.status_id WHERE substr(f.departure_time,1,10) = ?", (date,)).fetchall()
-                if not rows:
-                        print("No flights on that date")
+        while True:
+                try:
+                        rows = cursor.execute("SELECT f.flight_id AS ID, r.departure_destination AS 'from', f.departure_time AS dep, r.arrival_destination AS 'to', f.arrival_time AS arr, s.status AS stat FROM flights as f INNER JOIN routes as r on f.route_id=r.route_id LEFT JOIN status as s on f.status_id = s.status_id WHERE substr(f.departure_time,1,10) = ?", (date,)).fetchall()
+                        if not rows:
+                                print("No flights on that date")
+                                return
+                        column_names = [description[0] for description in cursor.description]
+                        print(tabulate(rows, headers=column_names))
                         return
-                column_names = [description[0] for description in cursor.description]
-                print(tabulate(rows, headers=column_names))
-        except Exception as e:
-                print(f"Error {e}")
-        return
+                except Exception as e:
+                        print(f"Error {e}")
+
 # Allows user to view details of flights that have a given status
 def viewFlightsByStatus():
-        stat = getStatus()
-        rows = cursor.execute("SELECT f.flight_id AS ID, r.departure_destination AS 'from', f.departure_time AS dep, r.arrival_destination AS 'to', f.arrival_time AS arr, s.status AS stat FROM flights as f INNER JOIN routes as r on f.route_id=r.route_id LEFT JOIN status as s on f.status_id = s.status_id WHERE s.status_id = ?", (stat,)).fetchall()
-        column_names = [description[0] for description in cursor.description]
-        print(tabulate(rows, headers=column_names))
-        return
-
-# Allows user to update a flight's status and times (not route)
-def updateFlights():
-        print("Please enter the flight ID of the flight you want to update")
-        changed_flight = getFlight()
-        print("Please enter the new flight status: ")
-        stat = getStatus()
-        print("Please enter the new departure date and time: ")
-        new_dep_time = getDateTime()
-        print("Please enter the new arrival date and time: ")
-        new_arr_time = getDateTime()
-        try:
-                cursor.execute( "UPDATE flights SET status_id = ?, departure_time = ?, arrival_time =? WHERE flight_id = ?", (stat, new_dep_time, new_arr_time, changed_flight,))
-                rows = cursor.execute("SELECT f.flight_id AS ID, r.departure_destination AS 'from', f.departure_time AS dep, r.arrival_destination AS 'to', f.arrival_time AS arr, s.status AS stat FROM flights as f INNER JOIN routes as r on f.route_id=r.route_id INNER JOIN status as s on f.status_id = s.status_id WHERE f.flight_id = ?", (changed_flight,)).fetchall()
-                column_names = [description[0] for description in cursor.description]
-                print(column_names)
-                print(rows)
-        except Exception as e:
-                print(f"Error! {e}")
-        return 
+        print("View Flights by Status")
+        while True:
+                try:
+                        stat = getStatus()
+                        rows = cursor.execute("SELECT f.flight_id AS ID, r.departure_destination AS 'from', f.departure_time AS dep, r.arrival_destination AS 'to', f.arrival_time AS arr, s.status AS stat FROM flights as f INNER JOIN routes as r on f.route_id=r.route_id LEFT JOIN status as s on f.status_id = s.status_id WHERE s.status_id = ?", (stat,)).fetchall()
+                        column_names = [description[0] for description in cursor.description]
+                        print(tabulate(rows, headers=column_names))
+                        return
+                except Exception as e:  
+                        print(f"Error {e}")
 
 # END OF FLIGHT FUNCTIONS =====================================================================================================================================================================================================================
 
@@ -409,44 +458,58 @@ def addPilot():
         new_pilot_name = getString()
         print("Enter pilot's last name")
         new_pilot_surname = getString()
-        try:
-                cursor.execute("INSERT INTO pilots (first_name, last_name) VALUES (?, ?)", (new_pilot_name, new_pilot_surname,))
-                print("Pilot " + new_pilot_name + " " + new_pilot_surname + " added")
-        except Exception as e:
-                print(f"Error! {e}")
-        return
+        while True:
+                try:
+                        cursor.execute("INSERT INTO pilots (first_name, last_name) VALUES (?, ?)", (new_pilot_name, new_pilot_surname,))
+                        print("Pilot " + new_pilot_name + " " + new_pilot_surname + " added")
+                except Exception as e:
+                        print(f"Error! {e}")
+                        return
 
 # Update an existing pilot
 
 def updatePilot():
         print("Please enter the details to update the pilot's details")
+
         changed_pilot = getPilot()
-        try:
-                rows = cursor.execute("SELECT * FROM pilots WHERE pilot_id = ?", (changed_pilot,)).fetchall()
-                print("The pilot's current details are:")
-                column_names = [description[0] for description in cursor.description]
-                print(tabulate(rows, headers=column_names))
-                new_name = input ("New first name: ")
-                new_surname = input ("New surname: ")
-                cursor.execute( "UPDATE pilots SET first_name = ?, last_name = ? WHERE pilot_id = ?", (new_name, new_surname, changed_pilot,))
-                rows = cursor.execute("SELECT * FROM pilots WHERE pilot_id = ?", (changed_pilot,)).fetchall()
-                print("The new pilot's details are:")
-                column_names = [description[0] for description in cursor.description]
-                print(tabulate(rows, headers=column_names))
-        except Exception as e:
-                print(f"Error! {e}")
-        return 
+        while True:
+                try:
+                        rows = cursor.execute("SELECT * FROM pilots WHERE pilot_id = ?", (changed_pilot,)).fetchall()
+                        print("The pilot's current details are:")
+                        column_names = [description[0] for description in cursor.description]
+                        print(tabulate(rows, headers=column_names))
+                        new_name = input ("New first name: ")
+                        new_surname = input ("New surname: ")
+                        cursor.execute( "UPDATE pilots SET first_name = ?, last_name = ? WHERE pilot_id = ?", (new_name, new_surname, changed_pilot,))
+                        rows = cursor.execute("SELECT * FROM pilots WHERE pilot_id = ?", (changed_pilot,)).fetchall()
+                        print("The new pilot's details are:")
+                        column_names = [description[0] for description in cursor.description]
+                        print(tabulate(rows, headers=column_names))
+                except Exception as e:
+                        print(f"Error! {e}")
+                return 
 
 # Delate a pilot
     
 def deletePilot():
         print("Delete Pilot")
-        deleted_pilot = getPilot()        
-        cursor.execute("DELETE FROM pilots WHERE pilot_id = ?", (deleted_pilot,))
-        print("You have deleted pilot " + str(deleted_pilot))
-        return
+        deleted_pilot = getPilot()  
+        while True:
+                try:
+                        cursor.execute("DELETE FROM pilots WHERE pilot_id = ?", (deleted_pilot,))
+                        print("You have deleted pilot " + str(deleted_pilot))
+                        return
+                except Exception as e:
+                        print(f"Error! {e}")
 
 # See which flights and routes a given pilot is scheduled to fly on; order them by date
+
+def viewAllPilots():
+        print("View All Pilots")
+        rows = cursor.execute("SELECT * FROM pilots").fetchall()
+        column_names = [description[0] for description in cursor.description]
+        print(tabulate(rows, headers=column_names))
+        return
 
 def viewRosterByPilot():
         while True:
@@ -479,7 +542,9 @@ def viewNoFlightsByPilot():
 
 def assignPilotToFlight():
         print("Assign a pilot to a flight")
+        print("First select a flight")
         assigned_flight = getFlight()
+        print("Now select a pilot")
         assigned_pilot = getPilot()
         try:
                 cursor.execute("INSERT INTO roster (pilot_id, flight_id) VALUES (?, ?)", (assigned_pilot,assigned_flight,))
@@ -520,9 +585,8 @@ def addDestination():
         print(tabulate(rows, headers=column_names))
         return
         
-def updateDestinations():
+def updateDestination():
         print("Update a destination's timezone")
-        print("Enter the IATA code of the destination you want to update: ")
         dest = getDestination("old")
         new_offset = getUTCOffset()
         cursor.execute( "UPDATE destinations SET timezone = ? WHERE IATA_code = ?", (new_offset, dest,))
@@ -531,12 +595,21 @@ def updateDestinations():
         print(tabulate(rows, headers=column_names))
         return
 
+def deleteDestination():
+        print("Delete Destination")
+        deleted_dest = getDestination("old")
+        cursor.execute("DELETE FROM destinations WHERE IATA_code = ?", (deleted_dest,))
+        print("You have deleted destination " + str(deleted_dest))
+        return
+
 # END OF DESTINATION FUNCTIONS ===========================================================================================================================================================
 
 # MENU FUNCTIONS =========================================================================================================================================================================
 
+# Menu when a user selects View Flights from Flights Menu
+
 def viewFlightsMenu():
-        options = ["[1] by Arrival location", "[2] by Departure location", "[3] by Departure Date", "[4] by Status", "[5] back"]
+        options = ["[1] by Arrival location", "[2] by Departure location", "[3] by Departure Date", "[4] by Status", "[5] all Flights", "[6] back"]     
         terminal_menu = TerminalMenu(options, title=" View Flights Menu")
         menu_entry_index = terminal_menu.show()
         print(f"You have selected {options[menu_entry_index]}")
@@ -548,12 +621,16 @@ def viewFlightsMenu():
                 viewFlightsByDepartureDate()
         elif (menu_entry_index == 3):
                 viewFlightsByStatus()
-        elif (menu_entry_index ==4):
-                mainMenu()
+        elif (menu_entry_index == 4):
+                viewAllFlights()
+        elif (menu_entry_index == 5):
+                flightsMenu()   
         return
 
+# Menu when a user selects flights from Main Menu
+
 def flightsMenu():
-        options = ["[1] add flight", "[2] update flight", "[3] view flights", "[4] back"]
+        options = ["[1] add flight", "[2] update flight", "[3] delete flights", "[4] view flights", "[5] back"]
         terminal_menu = TerminalMenu(options, title=" Flights Menu")
         menu_entry_index = terminal_menu.show()
         print(f"You have selected {options[menu_entry_index]}")
@@ -562,10 +639,14 @@ def flightsMenu():
         elif (menu_entry_index == 1):
                 updateFlights()
         elif (menu_entry_index == 2):
-                viewFlightsMenu()
+                deleteFlight()
         elif (menu_entry_index == 3):
+                viewFlightsMenu()
+        elif (menu_entry_index == 4):
                 mainMenu()
         return
+
+# Menu when a user selects pilots from Main Menu
 
 def pilotsMenu():
         options = ["[1] add pilot", "[2] update pilot", "[3] delete pilot", "[4] view a pilot's schedule", "[5] show number of flights by pilot", "[6] assign pilot to flight", "[7] back"]
@@ -588,20 +669,26 @@ def pilotsMenu():
                 mainMenu()
         return
 
+# Menu when a user selects destinations from Main Menu
+
 def destinationsMenu():
-        options = ["[1] View", "[2] Add", "[3] Update", "[4] Back"]
+        options = ["[1] Add", "[2] Update", "[3] Delete", "[4] View", "[5] back"]
         terminal_menu = TerminalMenu(options, title=" Destinations Menu")
         menu_entry_index = terminal_menu.show()
         print(f"You have selected {options[menu_entry_index]}")
         if (menu_entry_index == 0 ):
-                viewDestinations()
-        elif (menu_entry_index == 1):
                 addDestination()
+        elif (menu_entry_index == 1):
+                updateDestination()
         elif (menu_entry_index ==2):
-                updateDestinations()
+                deleteDestination()
         elif (menu_entry_index == 3):
+                viewDestinations()
+        elif (menu_entry_index == 4):
                 mainMenu()
         return
+
+# Main menu
 
 def mainMenu():
         while True:
