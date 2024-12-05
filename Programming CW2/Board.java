@@ -6,6 +6,8 @@ public class Board {
     public Board(int width, int height) {
         this.width = width;
         this.height = height;
+
+        // Board is a 2D array of tiles
         this.board = new Tile[width][height];
     }
 

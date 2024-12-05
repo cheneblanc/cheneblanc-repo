@@ -12,6 +12,11 @@ public class Game {
         /* Create the player */
         Player player1 = new Player();
 
+        /* Read the game file */
+
+        File file = new File("DoD.txt");
+        file.readFile();
+
         /* Create the board */
         Board board = new Board(10, 10);
 
