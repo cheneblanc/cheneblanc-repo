@@ -14,39 +14,15 @@ public class Player {
         this.gold = 0;
     }
 
-/* Methods for player */
-
-    public void printLocation() {
-        System.out.println("Player location: " + location.getX() + ", " + location.getY());
-    }
-
-    public Location getLocation() {
-        return location;
-    }
+/* Accessors for player */
 
     public int getGold() {
         return gold;
     }
 
+/* Mutators for player */
+
     public void addGold() {
         gold++;
     }
-
-    public void moveNorth() {
-        location = new Location(location.getX(), location.getY() + 1);
-    }
-
-    public void moveSouth() {
-        location = new Location(location.getX(), location.getY() - 1);
-    }
-
-    public void moveEast() {
-        location = new Location(location.getX() + 1, location.getY());
-    }   
-
-    public void moveWest() {
-        location = new Location(location.getX() - 1, location.getY());
-    }
-
-    
 }

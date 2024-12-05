@@ -8,6 +8,7 @@ import sqlite3
 import re
 from simple_term_menu import TerminalMenu
 from datetime import datetime
+from tabulate import tabulate
 
 # DATABASE CONNECTION ======================================================================================================================
 
@@ -315,9 +316,7 @@ def addFlight():
         last_inserted_id = cursor.lastrowid
         rows = cursor.execute("SELECT f.flight_id AS ID, r.departure_destination AS 'from', f.departure_time AS dep, r.arrival_destination AS 'to', f.arrival_time AS arr, s.status AS stat FROM flights as f INNER JOIN routes as r on f.route_id=r.route_id LEFT JOIN status as s on f.status_id = s.status_id WHERE f.flight_id = ?", (last_inserted_id,)).fetchall()
         column_names = [description[0] for description in cursor.description]
-        print(column_names)
-        for row in rows:
-                print(row)
+        print(tabulate(rows, headers=column_names))
         f_id = cursor.execute("SELECT flight_id FROM flights WHERE rowid = ?", (last_inserted_id,)).fetchall()
         print(f"Now add a pilot to flight {cursor.lastrowid}")
         assignPilotToFlight()
@@ -334,9 +333,7 @@ def viewFlightsByArrivalLocation():
                                 return
                         else:
                                 column_names = [description[0] for description in cursor.description]
-                                print(column_names)
-                                for row in rows:
-                                        print(row)
+                                print(tabulate(rows, headers=column_names))
                                 return
                 except Exception as e:
                                 print(f"An error occurred: {e}")
@@ -353,9 +350,7 @@ def viewFlightsByDepartureLocation():
                                 return
                         else:
                                 column_names = [description[0] for description in cursor.description]
-                                print(column_names)
-                                for row in rows:
-                                        print(row)
+                                print(tabulate(rows, headers=column_names))
                                 return
                 except Exception as e:
                         print(f"An error occurred: {e}")
@@ -370,9 +365,7 @@ def viewFlightsByDepartureDate():
                         print("No flights on that date")
                         return
                 column_names = [description[0] for description in cursor.description]
-                print(column_names)
-                for row in rows:
-                        print(row)
+                print(tabulate(rows, headers=column_names))
         except Exception as e:
                 print(f"Error {e}")
         return
@@ -381,10 +374,7 @@ def viewFlightsByStatus():
         stat = getStatus()
         rows = cursor.execute("SELECT f.flight_id AS ID, r.departure_destination AS 'from', f.departure_time AS dep, r.arrival_destination AS 'to', f.arrival_time AS arr, s.status AS stat FROM flights as f INNER JOIN routes as r on f.route_id=r.route_id LEFT JOIN status as s on f.status_id = s.status_id WHERE s.status_id = ?", (stat,)).fetchall()
         column_names = [description[0] for description in cursor.description]
-        print(column_names)
-        for row in rows:
-                print(row)
-        viewFlightsMenu()
+        print(tabulate(rows, headers=column_names))
         return
 
 # Allows user to update a flight's status and times (not route)
@@ -434,15 +424,15 @@ def updatePilot():
         try:
                 rows = cursor.execute("SELECT * FROM pilots WHERE pilot_id = ?", (changed_pilot,)).fetchall()
                 print("The pilot's current details are:")
-                print(rows)
+                column_names = [description[0] for description in cursor.description]
+                print(tabulate(rows, headers=column_names))
                 new_name = input ("New first name: ")
                 new_surname = input ("New surname: ")
                 cursor.execute( "UPDATE pilots SET first_name = ?, last_name = ? WHERE pilot_id = ?", (new_name, new_surname, changed_pilot,))
                 rows = cursor.execute("SELECT * FROM pilots WHERE pilot_id = ?", (changed_pilot,)).fetchall()
                 print("The new pilot's details are:")
                 column_names = [description[0] for description in cursor.description]
-                print(column_names)
-                print(rows)
+                print(tabulate(rows, headers=column_names))
         except Exception as e:
                 print(f"Error! {e}")
         return 
@@ -468,11 +458,8 @@ def viewRosterByPilot():
                                 print("This pilot is not scheduled on any flights")
                                 return
                         else:
-                                print("Dates show arrival times")
                                 column_names = [description[0] for description in cursor.description]
-                                print(column_names)
-                                for row in rows:
-                                        print(row)
+                                print(tabulate(rows, headers=column_names))
                                 return
                 except Exception as e:
                         print(f"ERROR! {e}")
@@ -485,9 +472,7 @@ def viewNoFlightsByPilot():
         print("View number of flights by pilot")
         rows = cursor.execute("SELECT pilots.pilot_id, pilots.first_name, pilots.last_name, COUNT (DISTINCT flights.flight_id) AS no_flights FROM pilots LEFT JOIN roster ON pilots.pilot_id=roster.pilot_id LEFT JOIN flights ON roster.flight_id = flights.flight_id GROUP BY pilots.pilot_id, pilots.first_name, pilots.last_name").fetchall()
         column_names = [description[0] for description in cursor.description]
-        print(column_names)
-        for row in rows:
-                print(row)
+        print(tabulate(rows, headers=column_names))
         return
 
 # Assign a pilot to a flight
@@ -502,9 +487,7 @@ def assignPilotToFlight():
                 lastrowid = cursor.lastrowid
                 rows = cursor.execute("SELECT flights.departure_time, routes.departure_destination, departures.city, flights.arrival_time, routes.arrival_destination, arrivals.city FROM flights INNER JOIN roster ON flights.flight_id = roster.flight_id INNER JOIN routes ON flights.route_id = routes.route_id LEFT JOIN destinations AS arrivals ON routes.arrival_destination = arrivals.IATA_code LEFT JOIN destinations AS departures ON routes.departure_destination = departures.IATA_code WHERE roster.rowid = ? ", (lastrowid,)).fetchall()
                 column_names = [description[0] for description in cursor.description]
-                print(column_names)
-                for row in rows:
-                        print(row)
+                print(tabulate(rows, headers=column_names))
         except Exception as e:
                 print(f"ERROR! {e}")
         return
@@ -517,9 +500,7 @@ def viewDestinations():
         print("Destinations:")
         rows = cursor.execute("SELECT * FROM destinations").fetchall()
         column_names = [description[0] for description in cursor.description]
-        print(column_names)
-        for row in rows:
-                print(row)
+        print(tabulate(rows, headers=column_names))
         return
 
 def addDestination():
@@ -536,9 +517,7 @@ def addDestination():
         lastrowid = cursor.lastrowid
         rows = cursor.execute("SELECT * FROM destinations WHERE rowid = ?",(lastrowid,)).fetchall()
         column_names = [description[0] for description in cursor.description]
-        print(column_names)
-        for row in rows:
-                print(row)
+        print(tabulate(rows, headers=column_names))
         return
         
 def updateDestinations():
@@ -549,9 +528,7 @@ def updateDestinations():
         cursor.execute( "UPDATE destinations SET timezone = ? WHERE IATA_code = ?", (new_offset, dest,))
         rows = cursor.execute("SELECT * FROM destinations WHERE IATA_code = ?", (dest,)).fetchall()
         column_names = [description[0] for description in cursor.description]
-        print(column_names)
-        for row in rows:
-                print(row)
+        print(tabulate(rows, headers=column_names))
         return
 
 # END OF DESTINATION FUNCTIONS ===========================================================================================================================================================
