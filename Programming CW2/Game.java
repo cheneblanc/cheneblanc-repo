@@ -1,10 +1,13 @@
+import java.util.Scanner;
+
 public class Game {
-    private static final int WINNINGGOLD = 2;
+    private static int WINNINGGOLD;
     private Location botLocation = new Location(10, 10);
-    public Location goldLocation = new Location(5, 5);
 
     /* Main method - adds players and runs game */
     public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
 
         /* Create the game */
         Game game = new Game();
@@ -14,25 +17,26 @@ public class Game {
 
         /* Read the game file */
 
-        File file = new File("DoD.txt");
+        File file = new File(scanner);
         file.readFile();
+        WINNINGGOLD = file.getWinningGold();
 
         /* Create the board */
-        Board board = new Board(10, 10);
+        Board board = new Board(file.getWidth(), file.getHeight());
 
         /* Populate the board */
-        board.populateBoard();
+        board.populateBoard(file.getMapFile());
 
         /* Set the player initial location */
     
-        player1.location.setLocation(5,5);
+        player1.location.setLocation(1,1);
 
 
 
         while (!game.isLost(player1)) {
             Commands commands = new Commands();
             
-            commands.getCommands(game, board, player1, player1.location.getLocation());
+            commands.getCommands(game, board, player1, player1.location.getLocation(), scanner);
         }
         System.out.println("LOSE");
         System.exit(0);

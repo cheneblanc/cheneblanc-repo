@@ -1,96 +1,105 @@
 import java.io.FileNotFoundException;
-import java.util.Scanner;
 import java.io.FileReader;
 import java.io.BufferedReader;
-
-
-    // This class reads a file containing a map showing the locations of walls, gold, and the exit, as weel as the player's starting location and the winning gold amount.
-    // The file is a .txt file
-    // This is an example of the file:
-    // Use BufferedReader to read the file
-    /* name Example DoD Map
-win 3
-####################
-#...............E..#
-#...G..............#
-#.........G........#
-#..................#
-#..................#
-#...G..............#
-#.............G....#
-####################
-
-*/
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class File {
-    private String fileName;
+    private String file;
     private String line;
-    private String[] splitLine;
     private int winningGold;
-    private Location playerLocation;
-    private Location exitLocation;
     private int width;
     private int height;
+    private char[][] mapFile;
+    private String mapName;
+    private Scanner scanner;
 
-    
-    public File(String fileName) {
-        this.fileName = fileName;
+    public File(Scanner scanner) {
+        this.scanner = scanner;
     }
 
 // Read the file     
     public void readFile() {
         
-        String filepath = fileName;
-        String mapName = new String();
-        
-        try {
-            FileReader fileReader = new FileReader("Programming CW2/DoD.txt");
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            
-            try{
-                mapName = bufferedReader.readLine();
-            }
-            catch (Exception e) {
-                System.out.println("Error reading map name");
-            }
-            
-            System.out.println(mapName);
-            
-            try{
-                winningGold = Integer.parseInt(bufferedReader.readLine().split("win ")[1]);
-            }
-            catch (Exception e) {
-                System.out.println("Error reading value of gold required to win");
-            }
-            System.out.println("Winning gold: " + winningGold);
+        // Add ability for the user to input the file path
 
+        Boolean validFile = false;
 
-            while ((line = bufferedReader.readLine()) != null) {
-                splitLine = line.split("");
-                for (int i = 0; i < splitLine.length; i++) {
-                    if (splitLine[i].equals("#")) {
-                        // Create a wall tile
+        while (!validFile) {
+            try {
+                System.out.println("Enter the file path for the map file: ");
+                file = scanner.nextLine();
+                FileReader fileReader = new FileReader(file);
+                validFile = true;   
+
+                try (BufferedReader bufferedReader = new BufferedReader(fileReader)){
+                    try{
+                        mapName = bufferedReader.readLine();
+                        }
+                    catch (Exception e) {
+                        System.out.println("Error reading map name");
+                        }  
+            
+                    try{
+                        winningGold = Integer.parseInt(bufferedReader.readLine().split("win ")[1]);
+                        }
+                    catch (Exception e) {
+                        System.out.println("Error reading value of gold required to win");
                     }
-                    else if (splitLine[i].equals(".")) {
-                        // Create an empty tile
-                    }
-                    else if (splitLine[i].equals("G")) {
-                        // Create a gold tile
-                    }
-                    else if (splitLine[i].equals("E")) {
-                        // Create an exit tile
-                    }
-                    else if (splitLine[i].equals("P")) {
-                        // Create a player tile
-                    }
+
+                    // Determine the width and height of the map
+            
+                    List <String> lines = new ArrayList<String>();
+
+                    // Read the file line by line to determine the height
+
+                    while ((line = bufferedReader.readLine()) != null) {
+                    lines.add(line);
+                    }   
+                    height = lines.size();
+                    width = lines.get(0).length(); // Assume all lines are the same length
+
+                    // Create a 2D array containing the map characters from the file
+
+                    mapFile = new char[width][height];
+                    for (int y = 0; y < height; y++) {
+                        for (int x = 0; x < width; x++) {
+                            mapFile[x][y] = lines.get(height-1-y).charAt(x);
+                        }
+                    }            
                 }
-                System.out.println();
+                catch (Exception e) {
+                    System.out.println("Error reading file");
+                }
             }
-
-
+            catch (FileNotFoundException e) {
+                System.out.println("File not found");
+            }
         }
-        catch (Exception e) {
-            System.out.println("Error reading file");
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                System.out.print(mapFile[x][y]);
+            }
+            System.out.println();
         }
-    }  
+            
+    }
+    
+    public int getWinningGold() {
+        return winningGold;
+    }
+
+    public int getWidth() {
+        return width;
+    }   
+
+    public int getHeight() {
+        return height;
+    }   
+
+    public char[][] getMapFile() {
+        return mapFile;
+    }
 }

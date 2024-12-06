@@ -2,6 +2,10 @@ public class Board {
     public Tile[][] board;
     private int width;
     private int height;
+    private Tile gold; 
+    private Tile wall; 
+    private Tile empty; 
+    private Tile exit;
 
     public Board(int width, int height) {
         this.width = width;
@@ -9,26 +13,36 @@ public class Board {
 
         // Board is a 2D array of tiles
         this.board = new Tile[width][height];
+
+        // Create the tile objects
+        this.gold = new Tile("G", true);
+        this.wall = new Tile("#", false);
+        this.empty = new Tile(".", true);
+        this.exit = new Tile("E", true);
     }
 
-    public void populateBoard() {
-        Tile gold = new Tile("G", true);
-        Tile wall = new Tile("#", false);
-        Tile empty = new Tile(".", true);
-        Tile exit = new Tile("E", true);
+// Set the tiles based on teh contents of the map file
+
+    public void populateBoard(char[][] mapFile) {
         
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                board[x][y] = empty;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                switch (mapFile[x][y]) {
+                    case 'G':
+                        board[x][y] = gold;
+                        break;
+                    case '#':
+                        board[x][y] = wall;
+                        break;
+                    case '.':
+                        board[x][y] = empty;
+                        break;
+                    case 'E':
+                        board[x][y] = exit;
+                        break;
+                }
             }
-        }
-
-        board[5][4] = exit;
-        board[5][5] = gold;
-        board[5][6] = gold;
-        board[6][5] = gold;
-        board[7][5] = wall;
-
+        }   
     }
     
     public void setTile(Location location, Tile tile) {
@@ -40,22 +54,25 @@ public class Board {
     }
 
     /* Need to modify this to only show board that is visible to player */
-    /* Need to print location of player over the top */
 
-    public void printBoard(Player player, Location location) {
-        for (int y = location.getY() +10; y >= location.getY()-10; y--) {
-            for (int x = location.getX()-10; x <= location.getX()+10; x++) {
-                if (x < 0 || x >= width || y < 0 || y >= height) {
-                    System.out.print("#");
+    public void printBoard(Player player, Location location, Integer see) {
+        for (int y = location.getY() +see; y >= location.getY()-see; y--) {
+            // If outside the board, print a wall character
+            for (int x = location.getX()-see; x <= location.getX()+see; x++) {
+                if (x < 0 || x >= width-1 || y < 0 || y >= height-1) {
+                    System.out.print(wall.getDisplayCharacter());
                     continue;
                 }
-                // Modify this code to vary the character
+                // Print the player location
                 if(x == location.getX() && y == location.getY()){
                     System.out.print("P");
                     continue;
                 }
+
+                // Add code here to print the bot location
+
                 else{
-                    System.out.print(board[x][y].getDisplayCharacter());
+                    System.out.print(board[x][y].getDisplayCharacter()); // Prints the board tile-by-tile
                 }
             }
             System.out.println();
