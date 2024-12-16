@@ -3,9 +3,18 @@ import java.util.Scanner;
 // Figure out how to close the scanner
 
 public class Commands {
+    
+    // Refactor Commmands so it has a constructor and we're passing fewer parameters to the getCommands method
+    
+    private Game game;
     private Scanner scanner;
+
+    public Commands(Game game, Scanner scanner) {
+        this.game = game;   
+        this.scanner = scanner;
+    }
             
-    public void getCommands(Game game, Board board, Player player, Location location, Scanner scanner) {
+    public void getCommands(Board board, Player player, Location location) {
         
         System.out.println("Enter a command: ");
 
@@ -48,77 +57,46 @@ public class Commands {
                 // If not, print "Success"
 
             case "MOVE N":
-                if (player.location.getLocation().getY() > board.getHeight()-2){    
-                    System.out.println("Fail");
-                    break;
-                }
-                else{
-                    player.location.move("N");
-                }   
-                if (board.getTile(player.location.getLocation()).isWalkable() == false) {
-                    player.location.move("S");
-                    System.out.println("Fail");
-                    break;
-                }
-                else{
+                Boolean moveN = player.moveNorth();
+                if (moveN) {
                     System.out.println("Success");
-                    break;
+                } 
+                else {
+                    System.out.println("Fail");
                 }
+                break;
+            
             case "MOVE S":
-                if (player.location.getLocation().getY() < 1) {
-                    System.out.println("Fail");
-                    break;
-                }
-                else{
-                    player.location.move("S");
-                }
-                if (board.getTile(player.location.getLocation()).isWalkable() == false) {
-                    player.location.move("N");
-                    System.out.println("Fail");
-                    break;
-                }
-                else{
+                Boolean moveS = player.moveSouth();
+                if (moveS) {
                     System.out.println("Success");
-                    break;
+                } else {
+                    System.out.println("Fail");
                 }
+                break;
+            
             case "MOVE E":
-                if (player.location.getLocation().getX() > board.getWidth()-2) {
-                    System.out.println("Fail");
-                    break;
-                }
-                else{
-                    player.location.move("E");
-                }
-                if (board.getTile(player.location.getLocation()).isWalkable() == false) {
-                    player.location.move("W");
-                    System.out.println("Fail");
-                    break;
-                }
-                else{
+                Boolean moveE = player.moveEast();
+                if (moveE) {
                     System.out.println("Success");
-                    break;
+                } else {
+                    System.out.println("Fail");
                 }
+                break;
+            
             case "MOVE W":
-                if (player.location.getLocation().getX() < 1) {
-                    System.out.println("Fail");
-                    break;
-                }
-                else{
-                    player.location.move("W");
-                }
-                    if (board.getTile(player.location.getLocation()).isWalkable() == false) {
-                    player.location.move("E");
-                    System.out.println("Fail");
-                    break;
-                }
-                else{
+                Boolean moveW = player.moveWest();
+                if (moveW) {
                     System.out.println("Success");
-                    break;
+                } else {
+                    System.out.println("Fail");
                 }
-
+                break;
+            
             case "LOOK":
                 board.printBoard(player, player.location.getLocation(),2); // prints the board with a radius around the player given by the final value
                 break;
+            
             default:
                 System.out.println("Invalid Command");
                 break;

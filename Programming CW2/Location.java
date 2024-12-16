@@ -1,5 +1,3 @@
-import java.util.Objects;
-
 public class Location {
     
     private int x;
@@ -53,11 +51,6 @@ public class Location {
         }
         Location location = (Location) obj;
         return x == location.x && y == location.y;
-    }
-
-   @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
     }
 
 }

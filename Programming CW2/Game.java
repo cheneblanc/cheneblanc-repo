@@ -1,7 +1,8 @@
 import java.util.Scanner;
 
 public class Game {
-    private static int WINNINGGOLD;
+    
+    private static int winningGold;
     private Location botLocation = new Location(10, 10);
 
     /* Main method - adds players and runs game */
@@ -9,17 +10,15 @@ public class Game {
 
         Scanner scanner = new Scanner(System.in);
 
-        /* Create the game */
-        Game game = new Game();
+        Game game = new Game(); // Create the game
         
-        /* Create the player */
-        Player player1 = new Player();
+        
 
-        /* Read the game file */
-
-        File file = new File(scanner);
+        File file = new File(scanner); // Create the file object
         file.readFile();
-        WINNINGGOLD = file.getWinningGold();
+        System.out.println("Map Name: " + file.getMapName());
+        winningGold = file.getWinningGold();
+    
 
         /* Create the board */
         Board board = new Board(file.getWidth(), file.getHeight());
@@ -27,34 +26,36 @@ public class Game {
         /* Populate the board */
         board.populateBoard(file.getMapFile());
 
+        Location startLocation = new Location (0,0);
+
+        Player player1 = new Player(startLocation,0,board); // Create the player
+
         /* Set the player initial location */
-    
-        player1.location.setLocation(1,1);
-
-
+               
+        player1.setStartLocation(board);
 
         while (!game.isLost(player1)) {
-            Commands commands = new Commands();
+            Commands commands = new Commands(game, scanner);
             
-            commands.getCommands(game, board, player1, player1.location.getLocation(), scanner);
+            commands.getCommands(board, player1, player1.location.getLocation());
         }
         System.out.println("LOSE");
         System.exit(0);
     }
 
-/* Accesssors */
+    /* Accesssors */
 
     public int getWinningGold() {
-        return WINNINGGOLD;
+        return winningGold;
     }
 
-/* Condition for winning the game */
+    /* Check if the game can be won on the quit command - player has enough gold and is on the exit tile  */
 
     public boolean isGameWon(Player player, Board board) {
-        return player.getGold() >= WINNINGGOLD && board.getTile(player.location.getLocation()).getDisplayCharacter().equals("E");
+        return player.getGold() >= winningGold && board.getTile(player.location.getLocation()).getDisplayCharacter().equals("E");
     }
 
-/* Condition for losing the game */
+    /* Check if the game has been lost - bot and player are in the same location */
 
     private boolean isLost(Player player) {
         return botLocation.equals(player.location.getLocation());

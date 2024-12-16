@@ -35,7 +35,7 @@ public class File {
 
                 try (BufferedReader bufferedReader = new BufferedReader(fileReader)){
                     try{
-                        mapName = bufferedReader.readLine();
+                        mapName = bufferedReader.readLine().substring(4).trim();
                         }
                     catch (Exception e) {
                         System.out.println("Error reading map name");
@@ -77,13 +77,6 @@ public class File {
                 System.out.println("File not found");
             }
         }
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                System.out.print(mapFile[x][y]);
-            }
-            System.out.println();
-        }
             
     }
     
@@ -101,5 +94,9 @@ public class File {
 
     public char[][] getMapFile() {
         return mapFile;
+    }
+
+    public String getMapName() {
+        return mapName;
     }
 }
