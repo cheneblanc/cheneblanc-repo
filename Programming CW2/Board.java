@@ -15,10 +15,10 @@ public class Board {
         this.board = new Tile[width][height];
 
         // Create the tile objects
-        this.gold = new Tile("G", true);
-        this.wall = new Tile("#", false);
-        this.empty = new Tile(".", true);
-        this.exit = new Tile("E", true);
+        this.gold = new Tile('G', true);
+        this.wall = new Tile('#', false);
+        this.empty = new Tile('.', true);
+        this.exit = new Tile('E', true);
     }
 
 // Set the tiles based on teh contents of the map file

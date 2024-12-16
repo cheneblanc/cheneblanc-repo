@@ -8,14 +8,14 @@ public class Location {
         this.y = y;
     }
 
-    public void move(String direction) {
-        if (direction.equals("N")) {
+    public void move(char direction) {
+        if (direction == 'N') {
             this.y++;
-        } else if (direction.equals("S")) {
+        } else if (direction =='S') {
             this.y--;
-        } else if (direction.equals("W")) {
+        } else if (direction == 'W') {
             this.x--;
-        } else if (direction.equals("E")) {
+        } else if (direction == 'E') {
             this.x++;
         }
     }

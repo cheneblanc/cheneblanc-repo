@@ -34,7 +34,7 @@ public class Player {
      */
     
     public void setStartLocation(Board board){
-        while (!(board.getTile(location.getLocation()).getDisplayCharacter().equals(".") || board.getTile(location.getLocation()).getDisplayCharacter().equals("E"))){
+        while (!(board.getTile(location.getLocation()).getDisplayCharacter() == '.' || board.getTile(location.getLocation()).getDisplayCharacter() == 'E')){
           location.setLocation((int) (Math.random() * board.getWidth()), (int) (Math.random() * board.getHeight()));
         }
     }
@@ -46,10 +46,10 @@ public class Player {
             return false;
         }
         else{
-            this.location.move("N");
+            this.location.move('N');
         }   
         if (board.getTile(this.location.getLocation()).isWalkable() == false) {
-            this.location.move("S");
+            this.location.move('S');
             return false;
         }
         else{
@@ -62,10 +62,10 @@ public class Player {
             return false;
         }
         else{
-            this.location.move("S");
+            this.location.move('S');
         }   
         if (board.getTile(this.location.getLocation()).isWalkable() == false) {
-            this.location.move("N");
+            this.location.move('N');
             return false;
         }
         else{
@@ -78,10 +78,10 @@ public class Player {
             return false;
         }
         else{
-            this.location.move("E");
+            this.location.move('E');
         }   
         if (board.getTile(this.location.getLocation()).isWalkable() == false) {
-            this.location.move("W");
+            this.location.move('W');
             return false;
         }
         else{
@@ -94,14 +94,41 @@ public class Player {
             return false;
         }
         else{
-            this.location.move("W");
+            this.location.move('W');
         }   
         if (board.getTile(this.location.getLocation()).isWalkable() == false) {
-            this.location.move("E");
+            this.location.move('E');
             return false;
         }
         else{
             return true;
         }   
+    }
+
+    public boolean pickUp(){
+        if (board.getTile(this.location.getLocation()).getDisplayCharacter()=='G'){
+            board.setTile(this.location.getLocation(), new Tile('.', true));
+            addGold();
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public char[][] look(int see){
+        char[][] visibleBoard = new char[see][see];
+        for (int y = location.getLocation().getY() +see; y >= location.getLocation().getY()-see; y--) {
+            for (int x = location.getLocation().getX()-see; x <= location.getLocation().getX()+see; x++) {
+                if (x < 0 || x >= board.getWidth()-1 || y < 0 || y >= board.getHeight()-1) {
+                    visibleBoard[x][y] = '#';
+                }
+                else{
+                    Location visibleLocation = new Location(x,y);
+                    visibleBoard[x][y] = board.getTile(visibleLocation).getDisplayCharacter();    
+                }
+            }
+        }
+        return visibleBoard;
     }
 }

@@ -22,9 +22,8 @@ public class Commands {
 
         switch (command) {
             case "PICKUP":
-                if (board.getTile(player.location.getLocation()).getDisplayCharacter().equals("G")) {
-                    player.addGold();
-                    board.setTile(player.location.getLocation(), new Tile(".", true));
+                Boolean pickup = player.pickUp();    
+                if (pickup) {
                     System.out.println("Success. Gold Owned: " + player.getGold());
                 }    
                 else {

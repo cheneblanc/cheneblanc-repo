@@ -1,12 +1,12 @@
 // Add back name to make code more readable and not rely on display characters for logic
 
 public class Tile {
-    private String displayCharacter;
+    private char displayCharacter;
     private boolean isWalkable;
 
 /* Constructor for tiles */
 
-    public Tile(String displayCharacter, boolean isWalkable) {
+    public Tile(char displayCharacter, boolean isWalkable) {
 
         this.displayCharacter = displayCharacter;
         this.isWalkable = isWalkable;
@@ -14,7 +14,7 @@ public class Tile {
 
 /* Accessors for tiles */    
 
-    public String getDisplayCharacter() {
+    public char getDisplayCharacter() {
         return displayCharacter;
     }
 
@@ -24,7 +24,7 @@ public class Tile {
 
 /* Mutators for tiles*/    
 
-    public void setDisplayCharacter(String displayCharacter) {
+    public void setDisplayCharacter(char displayCharacter) {
         this.displayCharacter = displayCharacter;
     }
 
