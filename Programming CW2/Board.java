@@ -2,12 +2,13 @@ public class Board {
     private Tile[][] board;
     private int width;
     private int height;
-    private Tile gold; 
-    private Tile wall; 
-    private Tile empty; 
-    private Tile exit;
-    private Tile player;
-    private Tile bot;
+    private static final Tile GOLD = new Tile('G', true); 
+    private static final Tile WALL = new Tile('#', false); 
+    private static final Tile EMPTY = new Tile('.', true); 
+    private static final Tile EXIT = new Tile('E', true);
+    private static final Tile PLAYER = new Tile('P', true);
+    private static final Tile BOT = new Tile('B', true);
+    private BotPlayer bot;
 
     public Board(int width, int height) {
         this.width = width;
@@ -15,17 +16,13 @@ public class Board {
 
         // Board is a 2D array of tiles
         this.board = new Tile[width][height];
-
-        // Create the tile objects
-        this.gold = new Tile('G', true);
-        this.wall = new Tile('#', false);
-        this.empty = new Tile('.', true);
-        this.exit = new Tile('E', true);
-        this.player = new Tile('P', true);
-        this.bot = new Tile('B', true);
     }
 
 // Set the tiles based on teh contents of the map file
+
+    public void setBot(BotPlayer bot){
+        this.bot = bot;
+    }
 
     public void populateBoard(char[][] mapFile) {
         
@@ -33,16 +30,16 @@ public class Board {
             for (int x = 0; x < width; x++) {
                 switch (mapFile[x][y]) {
                     case 'G':
-                        board[x][y] = gold;
+                        board[x][y] = GOLD;
                         break;
                     case '#':
-                        board[x][y] = wall;
+                        board[x][y] = WALL;
                         break;
                     case '.':
-                        board[x][y] = empty;
+                        board[x][y] = EMPTY;
                         break;
                     case 'E':
-                        board[x][y] = exit;
+                        board[x][y] = EXIT;
                         break;
                 }
             }
@@ -68,17 +65,19 @@ public class Board {
                 int boardY = location.getY() + y - see;
                 Location boardLocation = new Location(boardX, boardY);
                 if (boardX < 0 || boardX >= width-1 || boardY < 0 || boardY >= height-1) {
-                    visibleBoard[x][y] = wall;
+                    visibleBoard[x][y] = WALL;
                     continue;
                 }
                 // Print the player location
                 if(boardLocation.equals(location)){
-                    visibleBoard[x][y] = player;
+                    visibleBoard[x][y] = PLAYER;
                     continue;
                 }
-
-                // Add code here to print the bot location
-
+                // Print the bot location
+                if(boardLocation.equals(bot.location.getLocation())){
+                    visibleBoard[x][y] = BOT;
+                    continue;
+                }
                 else{
                     visibleBoard[x][y] = getTile(boardLocation);
                 }
@@ -96,7 +95,7 @@ public class Board {
     }
 
     public Boolean isEmpty (Location location){
-        if (board[location.getX()][location.getY()] == empty){
+        if (board[location.getX()][location.getY()] == EMPTY){
             return true;
         }
         else{
@@ -105,7 +104,7 @@ public class Board {
     }
 
     public Boolean isExit (Location location){
-        if (board[location.getX()][location.getY()] == exit){
+        if (board[location.getX()][location.getY()] == EXIT){
             return true;
         }
         else{
@@ -114,7 +113,7 @@ public class Board {
     }   
 
     public Boolean isGold (Location location){
-        if (board[location.getX()][location.getY()] == gold){
+        if (board[location.getX()][location.getY()] == GOLD){
             return true;
         }
         else{
@@ -123,25 +122,7 @@ public class Board {
     }   
 
     public Boolean isWall (Location location){
-        if (board[location.getX()][location.getY()] == wall){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-    public Boolean isBot (Location location){
-        if (board[location.getX()][location.getY()] == bot){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }    
-
-    public Boolean isPlayer (Location location){
-        if (board[location.getX()][location.getY()] == player){
+        if (board[location.getX()][location.getY()] == WALL){
             return true;
         }
         else{

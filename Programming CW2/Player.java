@@ -1,14 +1,15 @@
 public class Player {
-    
     public Location location;
     public int gold;
     public Board board;
+    public char displayCharacter;
 
 /* Constructor for player */    
-    public Player(Board board, Location location, int gold){ 
+    public Player(Board board, Location location, int gold, char displayCharacter){ 
         this.location = location;
         this.gold = gold;
         this.board = board;
+        this.displayCharacter = displayCharacter;
     }
 /* No arguments constructor for player */
     public Player(){

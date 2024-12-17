@@ -3,7 +3,6 @@ import java.util.Scanner;
 public class Game {
     
     private static int winningGold;
-    private Location botLocation = new Location(10, 10);
     
     /* Main method - adds players and runs game */
     public static void main(String[] args) {
@@ -25,17 +24,21 @@ public class Game {
         board.populateBoard(file.getMapFile());
 
         Location startLocation = new Location (0,0);
+        Location botLocation = new Location(0, 0);
+        Player player1 = new Player(board, startLocation,0,'P'); // Create the player
+        BotPlayer bot = new BotPlayer(board, botLocation, 0, 'B'); // Create the bot
 
-        Player player1 = new Player(board, startLocation,0); // Create the player
 
         /* Set the player initial location */
                
         player1.setStartLocation(board);
+        bot.setStartLocation(board);
+        board.setBot(bot);
 
-        while (!game.isLost(player1)) {
+        while (!game.isLost(player1, bot)) {
             Input input = new Input(game, board, scanner);
-            
             input.getInput(player1);
+            bot.moveBot();
         }
         System.out.println("LOSE");
         System.exit(0);
@@ -54,8 +57,8 @@ public class Game {
     }
 
     /* Check if the game has been lost - bot and player are in the same location */
-    private boolean isLost(Player player) {
-        return botLocation.equals(player.location.getLocation());
+    private boolean isLost(Player player, BotPlayer bot) {
+        return bot.location.getLocation().equals(player.location.getLocation());
     }
 }
 
