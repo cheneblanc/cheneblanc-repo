@@ -4,40 +4,38 @@ public class Game {
     
     private static int winningGold;
     private Location botLocation = new Location(10, 10);
-
+    
     /* Main method - adds players and runs game */
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
 
-        Game game = new Game(); // Create the game
-        
-        
+        /* Create the board */
 
         File file = new File(scanner); // Create the file object
         file.readFile();
         System.out.println("Map Name: " + file.getMapName());
         winningGold = file.getWinningGold();
-    
 
-        /* Create the board */
         Board board = new Board(file.getWidth(), file.getHeight());
+
+        Game game = new Game(); // Create the game
 
         /* Populate the board */
         board.populateBoard(file.getMapFile());
 
         Location startLocation = new Location (0,0);
 
-        Player player1 = new Player(startLocation,0,board); // Create the player
+        Player player1 = new Player(board, startLocation,0); // Create the player
 
         /* Set the player initial location */
                
         player1.setStartLocation(board);
 
         while (!game.isLost(player1)) {
-            Commands commands = new Commands(game, scanner);
+            Input input = new Input(game, board, scanner);
             
-            commands.getCommands(board, player1, player1.location.getLocation());
+            input.getInput(player1);
         }
         System.out.println("LOSE");
         System.exit(0);
@@ -56,7 +54,6 @@ public class Game {
     }
 
     /* Check if the game has been lost - bot and player are in the same location */
-
     private boolean isLost(Player player) {
         return botLocation.equals(player.location.getLocation());
     }

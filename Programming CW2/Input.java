@@ -2,19 +2,21 @@ import java.util.Scanner;
 
 // Figure out how to close the scanner
 
-public class Commands {
+public class Input {
     
     // Refactor Commmands so it has a constructor and we're passing fewer parameters to the getCommands method
     
     private Game game;
+    private Board board;
     private Scanner scanner;
 
-    public Commands(Game game, Scanner scanner) {
+    public Input(Game game, Board board, Scanner scanner) {
         this.game = game;   
         this.scanner = scanner;
+        this.board = board;
     }
             
-    public void getCommands(Board board, Player player, Location location) {
+    public void getInput(Player player) {
         
         System.out.println("Enter a command: ");
 
@@ -93,7 +95,13 @@ public class Commands {
                 break;
             
             case "LOOK":
-                board.printBoard(player, player.location.getLocation(),2); // prints the board with a radius around the player given by the final value
+                Tile [][] visibleBoard = player.look(board, 2);    
+                for (int y = visibleBoard.length-1; y > 0; y--) {
+                    for (int x = 0; x < visibleBoard[y].length; x++) {
+                        System.out.print(visibleBoard[x][y].getDisplayCharacter());
+                    }
+                    System.out.println();
+                }   
                 break;
             
             default:

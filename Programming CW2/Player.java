@@ -5,7 +5,7 @@ public class Player {
     public Board board;
 
 /* Constructor for player */    
-    public Player(Location location, int gold, Board board){ 
+    public Player(Board board, Location location, int gold){ 
         this.location = location;
         this.gold = gold;
         this.board = board;
@@ -14,7 +14,6 @@ public class Player {
     public Player(){
         this.location = new Location (0,0);
         this.gold = 0;
-        this.board = new Board(0,0);
     }
 
 /* Accessors for player */
@@ -34,15 +33,13 @@ public class Player {
      */
     
     public void setStartLocation(Board board){
-        while (!(board.getTile(location.getLocation()).getDisplayCharacter() == '.' || board.getTile(location.getLocation()).getDisplayCharacter() == 'E')){
+        while (!(board.isEmpty(this.location) || board.isExit(this.location))){
           location.setLocation((int) (Math.random() * board.getWidth()), (int) (Math.random() * board.getHeight()));
         }
     }
 
-// Migrate the player movement methods from Commands.java to Player.java to allow for building of bot as a subclass of player
-
     public boolean moveNorth(){
-        if (this.location.getLocation().getY() > board.getHeight()-2){    
+        if (this.location.getLocation().getY() >= board.getHeight()-1){    
             return false;
         }
         else{
@@ -58,7 +55,7 @@ public class Player {
     }
 
     public boolean moveSouth(){
-        if (this.location.getLocation().getY() < 1){    
+        if (this.location.getLocation().getY() <= 0){    
             return false;
         }
         else{
@@ -74,7 +71,7 @@ public class Player {
     }
 
     public boolean moveEast(){
-        if (this.location.getLocation().getX() > board.getWidth()-2){    
+        if (this.location.getLocation().getX() >= board.getWidth()-1){    
             return false;
         }
         else{
@@ -90,7 +87,7 @@ public class Player {
     }
 
     public boolean moveWest(){
-        if (this.location.getLocation().getX() < 1){    
+        if (this.location.getLocation().getX() <= 0){    
             return false;
         }
         else{
@@ -106,7 +103,7 @@ public class Player {
     }
 
     public boolean pickUp(){
-        if (board.getTile(this.location.getLocation()).getDisplayCharacter()=='G'){
+        if (board.isGold(this.location)){
             board.setTile(this.location.getLocation(), new Tile('.', true));
             addGold();
             return true;
@@ -116,19 +113,8 @@ public class Player {
         }
     }
 
-    public char[][] look(int see){
-        char[][] visibleBoard = new char[see][see];
-        for (int y = location.getLocation().getY() +see; y >= location.getLocation().getY()-see; y--) {
-            for (int x = location.getLocation().getX()-see; x <= location.getLocation().getX()+see; x++) {
-                if (x < 0 || x >= board.getWidth()-1 || y < 0 || y >= board.getHeight()-1) {
-                    visibleBoard[x][y] = '#';
-                }
-                else{
-                    Location visibleLocation = new Location(x,y);
-                    visibleBoard[x][y] = board.getTile(visibleLocation).getDisplayCharacter();    
-                }
-            }
-        }
+    public Tile[][] look(Board board, int see){
+        Tile[][] visibleBoard = board.viewBoard(location.getLocation(),10);
         return visibleBoard;
     }
 }
