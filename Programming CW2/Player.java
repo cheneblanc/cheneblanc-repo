@@ -1,15 +1,18 @@
 public class Player {
-    public Location location;
-    public int gold;
     public Board board;
+    public Location location;
+    private int gold;
     public char displayCharacter;
+    private int see;
+
 
 /* Constructor for player */    
-    public Player(Board board, Location location, int gold, char displayCharacter){ 
+    public Player(Board board, Location location, int gold, char displayCharacter, int see){ 
+        this.board = board;
         this.location = location;
         this.gold = gold;
-        this.board = board;
         this.displayCharacter = displayCharacter;
+        this.see = see;
     }
 /* No arguments constructor for player */
     public Player(){
@@ -21,6 +24,10 @@ public class Player {
 
     public int getGold() {
         return gold;
+    }
+
+    public int getSee(){
+        return see;
     }
 
 /* Mutators for player */
@@ -114,8 +121,8 @@ public class Player {
         }
     }
 
-    public Tile[][] look(Board board, int see){
-        Tile[][] visibleBoard = board.viewBoard(location.getLocation(),10);
+    public Tile[][] look(){
+        Tile[][] visibleBoard = board.viewBoard(location.getLocation(),this.see);
         return visibleBoard;
     }
 }

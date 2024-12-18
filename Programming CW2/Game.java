@@ -25,20 +25,30 @@ public class Game {
 
         Location startLocation = new Location (0,0);
         Location botLocation = new Location(0, 0);
-        Player player1 = new Player(board, startLocation,0,'P'); // Create the player
-        BotPlayer bot = new BotPlayer(board, botLocation, 0, 'B'); // Create the bot
+        Player player1 = new Player(board, startLocation,0,'P',10); // Create the player
+        BotPlayer bot = new BotPlayer(board, botLocation, 0, 'B',2,"search"); // Create the bot
 
 
         /* Set the player initial location */
                
         player1.setStartLocation(board);
+        board.setPlayer(player1);
         bot.setStartLocation(board);
         board.setBot(bot);
 
         while (!game.isLost(player1, bot)) {
+            
             Input input = new Input(game, board, scanner);
             input.getInput(player1);
-            bot.moveBot();
+            System.out.println("Bot Status: " + bot.getStatus());
+            System.out.println("Bot Location: " + bot.location.getX() + ", " + bot.location.getY());
+            System.out.println("Bot taking action now");
+            bot.decideAction();
+            System.out.println("Bot Status: " + bot.getStatus());
+            System.out.println("Player Location: " + player1.location.getX() + ", " + player1.location.getY());
+            System.out.println("Bot Location: " + bot.location.getX() + ", " + bot.location.getY());
+            System.out.println("Player found? " + bot.getPlayerFound());
+            System.out.println("Bot's knowledge of player location: " + bot.getPlayerXLocation() + ", " + bot.getPlayerYLocation());
         }
         System.out.println("LOSE");
         System.exit(0);

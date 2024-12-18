@@ -2,12 +2,13 @@ public class Board {
     private Tile[][] board;
     private int width;
     private int height;
-    private static final Tile GOLD = new Tile('G', true); 
-    private static final Tile WALL = new Tile('#', false); 
-    private static final Tile EMPTY = new Tile('.', true); 
-    private static final Tile EXIT = new Tile('E', true);
-    private static final Tile PLAYER = new Tile('P', true);
-    private static final Tile BOT = new Tile('B', true);
+    public static final Tile GOLD = new Tile('G', true); 
+    public static final Tile WALL = new Tile('#', false); 
+    public static final Tile EMPTY = new Tile('.', true); 
+    public static final Tile EXIT = new Tile('E', true);
+    public static final Tile PLAYER = new Tile('P', true);
+    public static final Tile BOT = new Tile('B', true);
+    private Player player;
     private BotPlayer bot;
 
     public Board(int width, int height) {
@@ -22,6 +23,10 @@ public class Board {
 
     public void setBot(BotPlayer bot){
         this.bot = bot;
+    }
+
+    public void setPlayer(Player player){
+        this.player = player;
     }
 
     public void populateBoard(char[][] mapFile) {
@@ -56,8 +61,10 @@ public class Board {
 
     /* Need to modify this to only show board that is visible to player */
 
-    public Tile[][] viewBoard(Location location, Integer see) {
+    public Tile[][] viewBoard(Location location, int see) {
+        
         Tile [][] visibleBoard = new Tile[see*2+1][see*2+1];
+        
         for (int y = 0; y <= see*2; y++) {
             for (int x = 0; x <= see*2; x++) {
                 // If outside the board, set a wall character
@@ -69,7 +76,7 @@ public class Board {
                     continue;
                 }
                 // Print the player location
-                if(boardLocation.equals(location)){
+                if(boardLocation.equals(player.location.getLocation())){
                     visibleBoard[x][y] = PLAYER;
                     continue;
                 }
