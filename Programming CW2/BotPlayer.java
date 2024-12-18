@@ -1,13 +1,15 @@
 public class BotPlayer extends Player{
     private String status;
+    private String strategy;
     private Boolean playerFound = false;
     private Location playerLocation = new Location(0,0);
     private Location exitLocation;
     private Location nearestGoldLocation;
 
-    public BotPlayer(Board board, Location location, int gold, char displayCharacter, int see, String status) {
+    public BotPlayer(Board board, Location location, int gold, char displayCharacter, int see, String strategy, String status) {
         super(board, location, gold, displayCharacter, see);
         this.status = status;
+        this.strategy = strategy;
     }
 
     public int getPlayerXLocation() {
@@ -69,8 +71,7 @@ public class BotPlayer extends Player{
     }
 
     public void decideAction(Game game){
-        String strategy = "chaser"; // Change this to "chaser" to make the bot chase the player or to "random" to make the bot move randomly.
-        
+
         switch (status){
             case "search":
                 botLook();
@@ -118,14 +119,20 @@ public class BotPlayer extends Player{
                 break;
             case "pickup":
                 pickUp();
+                nearestGoldLocation = null;
                 if (getGold()==game.getWinningGold()){
                     status = "exit";
                 }
                 else status = "search";
                 break;
             case "exit":
-                if (this.location.getLocation().equals(exitLocation)){
-                    System.out.println("Bot has exited the dungeon");
+                if (exitLocation == null){
+                    moveBot();
+                    status = "search";
+                }
+                else if (this.location.getLocation().equals(exitLocation)){
+                    System.out.println("Bot has exited the dungeon with " + getGold() + " gold.");
+                    System.out.println("LOSE");
                     System.exit(0);
                 }
                 else{
