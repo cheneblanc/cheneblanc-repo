@@ -9,6 +9,22 @@ public class BotPlayer extends Player{
         super(board, location, gold, displayCharacter, see);
         this.status = status;
     }
+
+    public int getPlayerXLocation() {
+        return playerLocation.getX();
+    }
+
+    public int getPlayerYLocation() {
+        return playerLocation.getY();
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Boolean getPlayerFound() {
+        return playerFound;
+    }
     
     public void moveBot(){
         int random = (int) (Math.random() * 4);
@@ -29,39 +45,113 @@ public class BotPlayer extends Player{
     }
 
     public void botLook(){
-        Tile [][] knownBoard = this.look();
-        for (int x = 0; x < knownBoard.length; x++){
-            for (int y = 0; y< knownBoard[x].length; y++){
+        Tile [][] seenBoard = this.look();
+        for (int x = 0; x < seenBoard.length; x++){
+            for (int y = 0; y< seenBoard[x].length; y++){
                 // If bot players sees the player, the exit or gold, store its location.
-                if (knownBoard[x][y].equals(Board.PLAYER)){
+                if (seenBoard[x][y].equals(Board.PLAYER)){
                     playerFound = true;
                     playerLocation = new Location (x+this.location.getLocation().getX()-getSee(), y+this.location.getLocation().getY()-getSee());
                 }
-                if (knownBoard[x][y].equals(Board.EXIT)){
+                if (seenBoard[x][y].equals(Board.EXIT)){
                     exitLocation = new Location (x+this.location.getLocation().getX()-getSee(), y+this.location.getLocation().getY()-getSee());
                 }
-                if (knownBoard[x][y].equals(Board.GOLD)){
+                if (seenBoard[x][y].equals(Board.GOLD)){
+                    if (nearestGoldLocation == null){
+                        nearestGoldLocation = new Location (x+this.location.getLocation().getX()-getSee(), y+this.location.getLocation().getY()-getSee());
+                    }
+                    else if (Math.abs(this.location.getLocation().getX()-nearestGoldLocation.getX())+Math.abs(this.location.getLocation().getY()-nearestGoldLocation.getY()) > Math.abs(this.location.getLocation().getX()-x)+Math.abs(this.location.getLocation().getY()-y)){
                     nearestGoldLocation = new Location (x+this.location.getLocation().getX()-getSee(), y+this.location.getLocation().getY()-getSee());
+                    }
                 }
             }
         }
     }
 
-    public void decideAction(){
+    public void decideAction(Game game){
+        String strategy = "chaser"; // Change this to "chaser" to make the bot chase the player or to "random" to make the bot move randomly.
+        
         switch (status){
             case "search":
                 botLook();
                 status = "move";
                 break;
             case "move":
-                if (!playerFound){
+                switch (strategy){
+                    case "random":
+                        moveBot();
+                        status = "search";
+                        break;
+                    case "chaser":
+                        if (playerFound){
+                            chasePlayer();
+                            status = "search";
+                            break;
+                        }
+                        else moveBot();
+                        status = "search";
+                        break;
+                    case "looter":
+                        if (nearestGoldLocation == null){
+                            moveBot();
+                            status = "search";
+                        }
+                        else moveToGold();
+                        if (this.location.getLocation().equals(nearestGoldLocation)){
+                            status = "pickup";
+                        }
+                        break;
+                    default:
+                        status = "search";
+                        break;
+                }
+                break;    
+            case "loot":
+                if (nearestGoldLocation == null){
                     moveBot();
                     status = "search";
-                    break;
+                }   
+                else moveToGold();
+                if (this.location.getLocation().equals(nearestGoldLocation)){
+                    status = "pickup";
                 }
-                chasePlayer();
-                status = "search";
                 break;
+            case "pickup":
+                pickUp();
+                if (getGold()==game.getWinningGold()){
+                    status = "exit";
+                }
+                else status = "search";
+                break;
+            case "exit":
+                if (this.location.getLocation().equals(exitLocation)){
+                    System.out.println("Bot has exited the dungeon");
+                    System.exit(0);
+                }
+                else{
+                    int xDelta = this.location.getLocation().getX() - exitLocation.getLocation().getX();
+                    int yDelta = this.location.getLocation().getY() - exitLocation.getLocation().getY();
+                    if (Math.abs(xDelta) > Math.abs(yDelta)){
+                        if (xDelta > 0){
+                            moveWest();
+                        }
+                        else{
+                            moveEast();
+                        }
+                    }
+                    else{
+                        if (yDelta > 0){
+                            moveSouth();
+                        }
+                        else{
+                            moveNorth();
+                        }
+                    }
+                break;
+                }    
+            default:
+                status = "search";;
+            
         }
     }
 
@@ -86,23 +176,31 @@ public class BotPlayer extends Player{
             else{
                 moveNorth();
             }
+        }    
+    }
+    
+    public void moveToGold(){
+        int xDelta = this.location.getLocation().getX() - nearestGoldLocation.getLocation().getX();
+        
+        int yDelta = this.location.getLocation().getY() - nearestGoldLocation.getLocation().getY();
+        
+        if (Math.abs(xDelta) > Math.abs(yDelta)){
+            if (xDelta > 0){
+                moveWest();
+            }
+            else{
+                moveEast();
+            }
+        }
+        else{
+            if (yDelta > 0){
+                moveSouth();
+            }
+            else{
+                moveNorth();
+            }
         }
         status = "search";    
-    }   
-
-    public int getPlayerXLocation() {
-        return playerLocation.getX();
     }
 
-    public int getPlayerYLocation() {
-        return playerLocation.getY();
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public Boolean getPlayerFound() {
-        return playerFound;
-    }
 }

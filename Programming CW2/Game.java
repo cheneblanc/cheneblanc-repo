@@ -40,15 +40,10 @@ public class Game {
             
             Input input = new Input(game, board, scanner);
             input.getInput(player1);
+            
+            bot.decideAction(game);
             System.out.println("Bot Status: " + bot.getStatus());
-            System.out.println("Bot Location: " + bot.location.getX() + ", " + bot.location.getY());
-            System.out.println("Bot taking action now");
-            bot.decideAction();
-            System.out.println("Bot Status: " + bot.getStatus());
-            System.out.println("Player Location: " + player1.location.getX() + ", " + player1.location.getY());
-            System.out.println("Bot Location: " + bot.location.getX() + ", " + bot.location.getY());
-            System.out.println("Player found? " + bot.getPlayerFound());
-            System.out.println("Bot's knowledge of player location: " + bot.getPlayerXLocation() + ", " + bot.getPlayerYLocation());
+            
         }
         System.out.println("LOSE");
         System.exit(0);
