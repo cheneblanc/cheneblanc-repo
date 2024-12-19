@@ -41,7 +41,7 @@ public class Player {
      */
     
     public void setStartLocation(Board board){
-        while (!(board.isEmpty(this.location) || board.isExit(this.location))){
+        while (!(board.isEmpty(this.location) || board.isExit(this.location ))){
           location.setLocation((int) (Math.random() * board.getWidth()), (int) (Math.random() * board.getHeight()));
         }
     }

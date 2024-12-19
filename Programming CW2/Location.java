@@ -40,6 +40,10 @@ public class Location {
     public void printLocation() {
         System.out.println("Location: " + x + ", " + y);
     }
+
+    public int distanceFrom (Location location) {
+        return Math.abs(this.x - location.x) + Math.abs(this.y - location.y);
+    }
     
     @Override
     public boolean equals(Object obj) {

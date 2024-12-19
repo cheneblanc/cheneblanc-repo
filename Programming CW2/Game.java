@@ -25,8 +25,8 @@ public class Game {
 
         Location startLocation = new Location (0,0);
         Location botLocation = new Location(0, 0);
-        Player player1 = new Player(board, startLocation,0,'P',10); // Create the player
-        BotPlayer bot = new BotPlayer(board, botLocation, 0, 'B',2,"looter","search"); // Create the bot
+        Player player1 = new Player(board, startLocation,0,'P',15); // Create the player
+        BotPlayer bot = new BotPlayer(board, botLocation, 0, 'B',2,"looter"); // Create the bot
 
 
         /* Set the player initial location */
@@ -34,6 +34,9 @@ public class Game {
         player1.setStartLocation(board);
         board.setPlayer(player1);
         bot.setStartLocation(board);
+        while (player1.location.equals(bot.location)){
+            bot.setStartLocation(board);
+        }
         board.setBot(bot);
 
         while (!game.isLost(player1, bot)) {

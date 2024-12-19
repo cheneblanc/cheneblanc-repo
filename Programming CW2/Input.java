@@ -18,9 +18,16 @@ public class Input {
             
     public void getInput(Player player) {
         
-        System.out.println("Enter a command: ");
+        String command;
+        do {
+            System.out.println("Enter a command: ");
+            command = scanner.nextLine().toUpperCase();
 
-        String command = scanner.nextLine().toUpperCase();
+            if (!(command.equals("PICKUP") || command.equals("HELLO") || command.equals("GOLD") || command.equals("QUIT") || command.equals("MOVE N") || command.equals("MOVE S") || command.equals("MOVE E") || command.equals("MOVE W") || command.equals("LOOK"))) {
+                System.out.println("Invalid Command");
+            }
+        } while (!(command.equals("PICKUP") || command.equals("HELLO") || command.equals("GOLD") || command.equals("QUIT") || command.equals("MOVE N") || command.equals("MOVE S") || command.equals("MOVE E") || command.equals("MOVE W") || command.equals("LOOK")));
+
 
         switch (command) {
             case "PICKUP":
@@ -106,7 +113,6 @@ public class Input {
             
             default:
                 System.out.println("Invalid Command");
-                break;
         }
     }
 }
