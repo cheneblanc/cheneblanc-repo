@@ -7,10 +7,8 @@ public class BotPlayer extends Player{
     private Location nearestGoldLocation;
     private Location target;
 
-    public BotPlayer(Board board, Location location, int gold, char displayCharacter, int see, String strategy) {
-        super(board, location, gold, displayCharacter, see);
-        this.strategy = strategy;
-    }
+    public BotPlayer(Board board, char displayCharacter) {
+        super(board, displayCharacter);    }
 
     public int getPlayerXSeen() {
         return playerSeenLocation.getX();

@@ -23,11 +23,8 @@ public class Game {
         /* Populate the board */
         board.populateBoard(file.getMapFile());
 
-        Location startLocation = new Location (0,0);
-        Location botLocation = new Location(0, 0);
-        Player player1 = new Player(board, startLocation,0,'P',15); // Create the player
-        BotPlayer bot = new BotPlayer(board, botLocation, 0, 'B',2,"looter"); // Create the bot
-
+        Player player1 = new Player(board,'P'); // Create the player
+        BotPlayer bot = new BotPlayer(board,'B'); // Create the bot
 
         /* Set the player initial location */
                
@@ -44,7 +41,7 @@ public class Game {
             Input input = new Input(game, board, scanner);
             input.getInput(player1);
             
-            bot.decideAction(game);
+            bot.decideAction(game); // Assume bot played first and said "HELLO"; then bot plays after player
             System.out.println("Bot Status: " + bot.getStatus());
             
         }

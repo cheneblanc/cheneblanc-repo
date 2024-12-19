@@ -3,21 +3,13 @@ public class Player {
     public Location location;
     private int gold;
     public char displayCharacter;
-    private int see;
+    private int see = 2;
 
 
 /* Constructor for player */    
-    public Player(Board board, Location location, int gold, char displayCharacter, int see){ 
+    public Player(Board board, char displayCharacter){ 
         this.board = board;
-        this.location = location;
-        this.gold = gold;
         this.displayCharacter = displayCharacter;
-        this.see = see;
-    }
-/* No arguments constructor for player */
-    public Player(){
-        this.location = new Location (0,0);
-        this.gold = 0;
     }
 
 /* Accessors for player */
@@ -53,7 +45,7 @@ public class Player {
         else{
             this.location.move('N');
         }   
-        if (board.getTile(this.location.getLocation()).isWalkable() == false) {
+        if (board.getTile(this.location.getLocation()).equals(Board.WALL) == true) {
             this.location.move('S');
             return false;
         }
@@ -69,7 +61,7 @@ public class Player {
         else{
             this.location.move('S');
         }   
-        if (board.getTile(this.location.getLocation()).isWalkable() == false) {
+        if (board.getTile(this.location.getLocation()).equals(Board.WALL) == true) {
             this.location.move('N');
             return false;
         }
@@ -85,7 +77,7 @@ public class Player {
         else{
             this.location.move('E');
         }   
-        if (board.getTile(this.location.getLocation()).isWalkable() == false) {
+        if (board.getTile(this.location.getLocation()).equals(Board.WALL) == true) {
             this.location.move('W');
             return false;
         }
@@ -101,7 +93,7 @@ public class Player {
         else{
             this.location.move('W');
         }   
-        if (board.getTile(this.location.getLocation()).isWalkable() == false) {
+        if (board.getTile(this.location.getLocation()).equals(Board.WALL) == true) {
             this.location.move('E');
             return false;
         }
