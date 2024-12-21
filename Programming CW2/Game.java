@@ -52,7 +52,6 @@ public class Game {
             input.getInput(player1);
             
             bot.decideAction(game); // Assume bot played first and said "HELLO"; then bot plays after player
-            System.out.println("Bot Status: " + bot.getStatus());
             
         }
         System.out.println("LOSE");

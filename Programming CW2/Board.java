@@ -25,9 +25,31 @@ public class Board {
         this.board = new char[width][height];
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+    
+    public char getTile(Location location) {
+        return board[location.getX()][location.getY()];
+    }
+    
+    /**
+     * Set a tile at a location on the board
+     * @param location the location of the tile to be set
+     * @param tile the type of tile this location should be set to
+     * @throws Exception if the location is out of bounds
+     * @throws Exception if the tile type is invalid
+     */
+     public void setTile(Location location, char tile) {
+        board[location.getX()][location.getY()] = tile;
+    }
+
     public void setBot(BotPlayer bot){
         this.bot = bot;
-        bot.setStrategy();
     }
 
     public void setPlayer(Player player){
@@ -76,23 +98,6 @@ public class Board {
             throw new Exception("Total number of Gold characters G in map file is less than the winning gold amount");
         }
     }
-    
-    /**
-     * Set a tile at a location on the board
-     * @param location the location of the tile to be set
-     * @param tile the type of tile this location should be set to
-     * @throws Exception if the location is out of bounds
-     * @throws Exception if the tile type is invalid
-     */
-    
-    public void setTile(Location location, char tile) {
-        board[location.getX()][location.getY()] = tile;
-    }
-
-
-    public char getTile(Location location) {
-        return board[location.getX()][location.getY()];
-    }
 
     /**
      * Generates the portion of the board that is visible to the player
@@ -101,7 +106,6 @@ public class Board {
      * @param see the distance the player can see around them
      * @return a 2D array of tiles representing the visible portion of the board
      */
-
     public char[][] viewBoard(Location location, int see) {
         
         char [][] visibleBoard = new char[see*2+1][see*2+1];
@@ -134,12 +138,6 @@ public class Board {
         return visibleBoard;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
+    
 }    
 

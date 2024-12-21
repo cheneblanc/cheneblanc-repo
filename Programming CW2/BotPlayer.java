@@ -1,5 +1,9 @@
+/**
+ * Extends the Player class to create a bot that can play the game autonomously.
+ */
+
 public class BotPlayer extends Player{
-    private String status = "move";
+    private char targetType;
     private String strategy;
     private Location playerSeenLocation;
     private Location exitLocation;
@@ -8,21 +12,15 @@ public class BotPlayer extends Player{
 
     public BotPlayer(Board board) {
         super(board);
-    }
-
-    public int getPlayerXSeen() {
-        return playerSeenLocation.getX();
-    }
-
-    public int getPlayerYLocation() {
-        return playerSeenLocation.getY();
-    }
-
-    public String getStatus() {
-        return status;
+        setStrategy();
     }
     
-    public void setStrategy(){
+    /**
+     * Sets the bot's strategy between chaser (tries to find the player and chase them) and looter (tries to find enough gold to win the game and then exit).
+     * The strategy is chosen randomly.
+     */
+    
+    private void setStrategy(){
         int random = (int) (Math.random() * 2);
         switch (random) {
             case 0:
@@ -34,7 +32,12 @@ public class BotPlayer extends Player{
         }
     }
     
-    public void moveBot(){
+    /**
+     * Moves the bot in a random direction.
+     * @deprecated - this method is not used in the final version of the game, but was built initially for the bot to move randomly.
+     */
+
+    private void moveBot(){
         int random = (int) (Math.random() * 4);
         switch (random) {
             case 0:
@@ -52,7 +55,12 @@ public class BotPlayer extends Player{
         }
     }
 
-    public void botLook(){
+    /**
+     * Allows the bot to perform the LOOK action and remember the locations of the player, the nearest gold and the nearest exit (if seen).
+     * Calls the getNewTarget method to decide where to move next at the end of the method, based on the information found in the LOOK action.
+     */
+    
+    private void botLook(){
         
         char [][] seenBoard = this.look();
         for (int x = 0; x < seenBoard.length; x++){
@@ -66,7 +74,12 @@ public class BotPlayer extends Player{
                     playerSeenLocation = new Location (realBoardX, realBoardY);
                 }
                 if (seenBoard[x][y]==(Board.EXIT)){
-                    exitLocation = new Location (realBoardX, realBoardY);
+                    if (exitLocation == null){
+                        exitLocation = new Location (realBoardX, realBoardY);
+                    }
+                    else if (this.location.distanceFrom(nearestGoldLocation) > this.location.distanceFrom(new Location (realBoardX, realBoardY))){
+                        nearestGoldLocation = new Location (realBoardX, realBoardY);
+                    }
                 }
                 if (seenBoard[x][y]==(Board.GOLD)){
                     if (nearestGoldLocation == null){
@@ -81,34 +94,37 @@ public class BotPlayer extends Player{
         getNewTarget();
     }
 
+    /**
+     * Determines the logic for the action that the bot will take
+     * @param game the game the bot is playing
+     * Works using the concept of a target
+     * If the bot has no target, it will look to try to find one
+     * 
+     */
+
     public void decideAction(Game game){
         if (target == null){
             botLook();
             return;
         }
-        System.out.println("Bot is deciding action");
-        System.out.println("Bot is at " + this.location.getLocation().getX() + ", " + this.location.getLocation().getY());
         
         if (this.location.equals(target)){
-            System.out.println("Bot has reached target");
             target = null;
             playerSeenLocation = null;
-            if (this.location.equals(exitLocation) && status.equals("moveToExit")){
+            if (this.location.equals(exitLocation) && targetType == Board.EXIT){
                 System.out.println("Bot has exited the dungeon with " + getGold() + " gold.");
                 System.out.println("LOSE");
                 System.exit(0);
             }
-            if (this.location.equals(nearestGoldLocation) && status.equals("moveToGold")){
-                System.out.println("Bot is picking up gold");
+            if (this.location.equals(nearestGoldLocation) && targetType == Board.GOLD){
                 pickUp();
                 nearestGoldLocation = null;
                 if (getGold()==game.getWinningGold()){
-                    status = "moveToExit";
+                    targetType = Board.EXIT;
                 }
-                else status = "move";
+                else targetType = 'X';
             }
             else {
-                System.out.println("Bot is searching");
                 botLook();
             }
         }
@@ -124,7 +140,7 @@ public class BotPlayer extends Player{
             case "chaser":
                 if (!(playerSeenLocation == null)){
                     target = playerSeenLocation;
-                    status = "chase";
+                    targetType = Board.PLAYER;
                 }
                 else {
                     target = getRandomTarget();
@@ -133,11 +149,9 @@ public class BotPlayer extends Player{
             // If the bot is in looter mode, it will move towards the nearest gold.    
             case "looter":
                 System.out.println("Bot is in looter mode");
-                if (status == "moveToExit"){
+                if (targetType == Board.EXIT){
                     if (exitLocation == null){
-                        System.out.println("Bot doesn't see the exit");
                         if (target == null){
-                            System.out.println("Bot has no target");
                             target = getRandomTarget();
                         }
                     }
@@ -155,7 +169,7 @@ public class BotPlayer extends Player{
                         }
                     else{
                         target = nearestGoldLocation;
-                        status = "moveToGold";
+                        targetType = Board.GOLD;
                     }
                     break;
             default:
