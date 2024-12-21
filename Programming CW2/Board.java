@@ -5,16 +5,16 @@
  */
 
 public class Board {
-    private Tile[][] board;
+    private char[][] board;
     private int width;
     private int height;
     private GameFile gameFile; 
-    public static final Tile GOLD = new Tile('G'); 
-    public static final Tile WALL = new Tile('#'); 
-    public static final Tile EMPTY = new Tile('.'); 
-    public static final Tile EXIT = new Tile('E');
-    public static final Tile PLAYER = new Tile('P');
-    public static final Tile BOT = new Tile('B');
+    public static final char GOLD = 'G';
+    public static final char WALL = '#';
+    public static final char EMPTY = '.';
+    public static final char EXIT = 'E';
+    public static final char PLAYER = 'P';
+    public static final char BOT = 'B';
     private Player player;
     private BotPlayer bot;
 
@@ -22,7 +22,7 @@ public class Board {
         this.width = width;
         this.height = height;
         this.gameFile = gameFile;
-        this.board = new Tile[width][height];
+        this.board = new char[width][height];
     }
 
     public void setBot(BotPlayer bot){
@@ -85,12 +85,12 @@ public class Board {
      * @throws Exception if the tile type is invalid
      */
     
-    public void setTile(Location location, Tile tile) {
+    public void setTile(Location location, char tile) {
         board[location.getX()][location.getY()] = tile;
     }
 
 
-    public Tile getTile(Location location) {
+    public char getTile(Location location) {
         return board[location.getX()][location.getY()];
     }
 
@@ -102,9 +102,9 @@ public class Board {
      * @return a 2D array of tiles representing the visible portion of the board
      */
 
-    public Tile[][] viewBoard(Location location, int see) {
+    public char[][] viewBoard(Location location, int see) {
         
-        Tile [][] visibleBoard = new Tile[see*2+1][see*2+1];
+        char [][] visibleBoard = new char[see*2+1][see*2+1];
         
         for (int y = 0; y <= see*2; y++) {
             for (int x = 0; x <= see*2; x++) {

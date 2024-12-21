@@ -102,10 +102,10 @@ public class Input {
                 break;
             
             case "LOOK":
-                Tile [][] visibleBoard = player.look();    
+                char [][] visibleBoard = player.look();    
                 for (int y = visibleBoard.length-1; y > 0; y--) {
                     for (int x = 0; x < visibleBoard[y].length; x++) {
-                        System.out.print(visibleBoard[x][y].getDisplayCharacter());
+                        System.out.print(visibleBoard[x][y]);
                     }
                     System.out.println();
                 }   

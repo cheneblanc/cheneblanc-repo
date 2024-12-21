@@ -47,7 +47,7 @@ public class Player {
         try{
             int tries = 0;
             int maxTries = board.getWidth() * board.getHeight();
-            while (!(board.getTile(location).equals(Board.EMPTY) || board.getTile(location).equals(Board.EXIT))){
+            while (!(board.getTile(location)==(Board.EMPTY) || board.getTile(location)==(Board.EXIT))){
                 location.setLocation((int) (Math.random() * board.getWidth()), (int) (Math.random() * board.getHeight()));
                 tries++;
             }
@@ -77,7 +77,7 @@ public class Player {
         else{
             location.move('N');
         }   
-        if (board.getTile(location).equals(Board.WALL)) {
+        if (board.getTile(location)==(Board.WALL)) {
             location.move('S');
             return false;
         }
@@ -101,7 +101,7 @@ public class Player {
         else{
             location.move('S');
         }   
-        if (board.getTile(location).equals(Board.WALL)) {
+        if (board.getTile(location)==(Board.WALL)) {
             location.move('N');
             return false;
         }
@@ -125,7 +125,7 @@ public class Player {
         else{
             location.move('E');
         }   
-        if (board.getTile(location).equals(Board.WALL)) {
+        if (board.getTile(location)==(Board.WALL)) {
             location.move('W');
             return false;
         }
@@ -149,7 +149,7 @@ public class Player {
         else{
             location.move('W');
         }   
-        if (board.getTile(location).equals(Board.WALL)) {
+        if (board.getTile(location)==(Board.WALL)) {
             location.move('E');
             return false;
         }
@@ -164,7 +164,7 @@ public class Player {
      */
 
     public boolean pickUp(){
-        if (board.getTile(location).equals(Board.GOLD)){
+        if (board.getTile(location)==(Board.GOLD)){
             board.setTile(location, Board.EMPTY);
             addGold();
             return true;
@@ -179,8 +179,8 @@ public class Player {
      * @return the visible board around the player as a 2D array of tiles governed by the player's see distance
      */
 
-    public Tile[][] look(){
-        Tile[][] visibleBoard = board.viewBoard(location,see);
+    public char[][] look(){
+        char[][] visibleBoard = board.viewBoard(location,see);
         return visibleBoard;
     }
 }

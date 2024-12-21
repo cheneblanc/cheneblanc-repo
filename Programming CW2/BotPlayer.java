@@ -54,7 +54,7 @@ public class BotPlayer extends Player{
 
     public void botLook(){
         
-        Tile [][] seenBoard = this.look();
+        char [][] seenBoard = this.look();
         for (int x = 0; x < seenBoard.length; x++){
             for (int y = 0; y< seenBoard[x].length; y++){
                 // If bot players sees the player, the exit or gold, store its location.
@@ -62,13 +62,13 @@ public class BotPlayer extends Player{
                 int realBoardX = x+this.location.getLocation().getX()-getSee();
                 int realBoardY = y+this.location.getLocation().getY()-getSee();
 
-                if (seenBoard[x][y].equals(Board.PLAYER)){
+                if (seenBoard[x][y]==(Board.PLAYER)){
                     playerSeenLocation = new Location (realBoardX, realBoardY);
                 }
-                if (seenBoard[x][y].equals(Board.EXIT)){
+                if (seenBoard[x][y]==(Board.EXIT)){
                     exitLocation = new Location (realBoardX, realBoardY);
                 }
-                if (seenBoard[x][y].equals(Board.GOLD)){
+                if (seenBoard[x][y]==(Board.GOLD)){
                     if (nearestGoldLocation == null){
                         nearestGoldLocation = new Location (realBoardX, realBoardY);
                     }
@@ -211,7 +211,7 @@ public class BotPlayer extends Player{
         // Keep within two squares of the edge (unless there's a better target)    
         } while (newTarget.getX() < 2 || newTarget.getX() >= board.getWidth()-2 || newTarget.getY() < 2 || newTarget.getY() >= board.getHeight()-2);
         // If this target is a wall, just get a random target within the current seen area that isn't a wall or the current square
-        while (board.getTile(newTarget).equals(Board.WALL) || newTarget.equals(this.location)) {
+        while (board.getTile(newTarget)==(Board.WALL) || newTarget.equals(this.location)) {
             newTarget = new Location ((int) (Math.random() * (2*getSee()+1))-getSee(), (int) (Math.random() * (2*getSee()+1))-getSee());
         }
 

@@ -68,7 +68,7 @@ public class Game {
     /* Check if the game can be won on the quit command - player has enough gold and is on the exit tile  */
 
     public boolean isGameWon(Player player, Board board) {
-        return player.getGold() >= winningGold && board.getTile(player.location.getLocation()).getDisplayCharacter()=='E';
+        return player.getGold() >= winningGold && board.getTile(player.location.getLocation())==Board.EXIT;
     }
 
     /* Check if the game has been lost - bot and player are in the same location */
