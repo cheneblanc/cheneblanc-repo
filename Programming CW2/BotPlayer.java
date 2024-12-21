@@ -1,14 +1,14 @@
 public class BotPlayer extends Player{
-    private String status = null;
+    private String status = "move";
     private String strategy;
-    private Boolean playerFound = false;
     private Location playerSeenLocation;
     private Location exitLocation;
     private Location nearestGoldLocation;
     private Location target;
 
-    public BotPlayer(Board board, char displayCharacter) {
-        super(board, displayCharacter);    }
+    public BotPlayer(Board board) {
+        super(board);
+    }
 
     public int getPlayerXSeen() {
         return playerSeenLocation.getX();
@@ -21,9 +21,17 @@ public class BotPlayer extends Player{
     public String getStatus() {
         return status;
     }
-
-    public Boolean getPlayerFound() {
-        return playerFound;
+    
+    public void setStrategy(){
+        int random = (int) (Math.random() * 2);
+        switch (random) {
+            case 0:
+                strategy = "chaser";
+                break;
+            case 1:
+                strategy = "looter";
+                break;
+        }
     }
     
     public void moveBot(){
@@ -55,7 +63,6 @@ public class BotPlayer extends Player{
                 int realBoardY = y+this.location.getLocation().getY()-getSee();
 
                 if (seenBoard[x][y].equals(Board.PLAYER)){
-                    playerFound = true;
                     playerSeenLocation = new Location (realBoardX, realBoardY);
                 }
                 if (seenBoard[x][y].equals(Board.EXIT)){
@@ -85,6 +92,7 @@ public class BotPlayer extends Player{
         if (this.location.equals(target)){
             System.out.println("Bot has reached target");
             target = null;
+            playerSeenLocation = null;
             if (this.location.equals(exitLocation) && status.equals("moveToExit")){
                 System.out.println("Bot has exited the dungeon with " + getGold() + " gold.");
                 System.out.println("LOSE");
@@ -97,7 +105,7 @@ public class BotPlayer extends Player{
                 if (getGold()==game.getWinningGold()){
                     status = "moveToExit";
                 }
-                else status = null;
+                else status = "move";
             }
             else {
                 System.out.println("Bot is searching");
@@ -114,8 +122,9 @@ public class BotPlayer extends Player{
         switch (strategy){
 
             case "chaser":
-                if (playerFound){
+                if (!(playerSeenLocation == null)){
                     target = playerSeenLocation;
+                    status = "chase";
                 }
                 else {
                     target = getRandomTarget();

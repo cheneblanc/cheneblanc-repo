@@ -5,7 +5,7 @@ public class Tile {
 
 /* Constructor for tiles */
 
-    public Tile(char displayCharacter, boolean isWalkable) {
+    public Tile(char displayCharacter) {
 
         this.displayCharacter = displayCharacter;
     }

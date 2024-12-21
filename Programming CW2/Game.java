@@ -7,32 +7,42 @@ public class Game {
     /* Main method - adds players and runs game */
     public static void main(String[] args) {
 
+        Game game = new Game();
+
         Scanner scanner = new Scanner(System.in);
 
         /* Create the board */
+        
+        Board board = new Board(0, 0, null);
 
-        File file = new File(scanner); // Create the file object
-        file.readFile();
-        System.out.println("Map Name: " + file.getMapName());
-        winningGold = file.getWinningGold();
+        /* Populate the board from the game file; catch exceptions and ask for a new file is the file isn't valid */
+        while (true) {
+            try {
+                GameFile file = new GameFile(scanner); // Create the file object
+                file.readFile();
+                System.out.println("Map Name: " + file.getMapName());
+                winningGold = file.getWinningGold();
+                board = new Board(file.getWidth(), file.getHeight(), file);
+                board.populateBoard(file.getMapFile());
+                break;
+            } 
+            catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println("Please try a different game file");
+            continue;
+            }
 
-        Board board = new Board(file.getWidth(), file.getHeight());
-
-        Game game = new Game(); // Create the game
-
-        /* Populate the board */
-        board.populateBoard(file.getMapFile());
-
-        Player player1 = new Player(board,'P'); // Create the player
-        BotPlayer bot = new BotPlayer(board,'B'); // Create the bot
+        }
+        Player player1 = new Player(board); // Create the player
+        BotPlayer bot = new BotPlayer(board); // Create the bot
 
         /* Set the player initial location */
                
-        player1.setStartLocation(board);
+        player1.setStartLocation();
         board.setPlayer(player1);
-        bot.setStartLocation(board);
+        bot.setStartLocation();
         while (player1.location.equals(bot.location)){
-            bot.setStartLocation(board);
+            bot.setStartLocation();
         }
         board.setBot(bot);
 

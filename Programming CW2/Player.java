@@ -1,100 +1,156 @@
+/** 
+    * To represent a player in the game who move around the board, picking up gold before moving to the exit.
+    * Note: BotPlayer extends this class
+    * @author Nigel Whiteoak
+*/
 public class Player {
-    public Board board;
-    public Location location;
+/**
+    * @param board the board on which the player is located
+    * @param location the location of the player on the board
+    * @param gold the amount of gold the player has collected
+    * @param displayCharacter the character that represents the player when the board is viewed
+    * @param see the distance the player can see around them when they execute the LOOK command
+ */    
+    protected Board board;
+    protected Location location;
     private int gold;
-    public char displayCharacter;
-    private int see = 2;
+    private int see = 15;
 
-
-/* Constructor for player */    
-    public Player(Board board, char displayCharacter){ 
+    public Player(Board board){ 
         this.board = board;
-        this.displayCharacter = displayCharacter;
     }
-
-/* Accessors for player */
 
     public int getGold() {
         return gold;
     }
 
+    /** 
+     * @return the distance the player can see around them when they use the LOOK command
+     */
     public int getSee(){
         return see;
     }
 
-/* Mutators for player */
-
     public void addGold() {
         gold++;
     }
+    
     /** 
-     * Set the player's start location at random. Check whether the tile on which the player is located is walkable, if not select a new random location.
-     * @param board
+     * Set the player's location to a random location on the board
+     * Checks that the location is empty or an exit (not gold)
+     * @throws Exception if no locations are available
+     * @param board the board on which the player is located
+     */
+
+    public void setStartLocation(){
+        location = new Location(0,0);
+        try{
+            int tries = 0;
+            int maxTries = board.getWidth() * board.getHeight();
+            while (!(board.getTile(location).equals(Board.EMPTY) || board.getTile(location).equals(Board.EXIT))){
+                location.setLocation((int) (Math.random() * board.getWidth()), (int) (Math.random() * board.getHeight()));
+                tries++;
+            }
+            if (tries >= maxTries){
+                throw new Exception("No locations available");
+            }
+        }
+        catch (Exception e){
+            System.out.println(e);
+            System.exit(0);
+        }
+       
+    }
+
+    /** 
+     * Move the player one square north on the board
+     * Checks that the player is not at the top edge of the board
+     * If not, moves the player one square north
+     * If the move lands the player on wall, moves the player back to their original location
+     * @return true if the move is successful, false if the player is at the edge of the board or there is a wall in the way
      */
     
-    public void setStartLocation(Board board){
-        while (!(board.isEmpty(this.location) || board.isExit(this.location ))){
-          location.setLocation((int) (Math.random() * board.getWidth()), (int) (Math.random() * board.getHeight()));
-        }
-    }
-
     public boolean moveNorth(){
-        if (this.location.getLocation().getY() >= board.getHeight()-1){    
+        if (location.getY() >= board.getHeight()-1){    
             return false;
         }
         else{
-            this.location.move('N');
+            location.move('N');
         }   
-        if (board.getTile(this.location.getLocation()).equals(Board.WALL) == true) {
-            this.location.move('S');
+        if (board.getTile(location).equals(Board.WALL)) {
+            location.move('S');
             return false;
         }
         else{
             return true;
         }   
     }
+
+    /** 
+     * Move the player one square south on the board
+     * Checks that the player is not at the bottom edge of the board
+     * If not, moves the player one square south
+     * If the move lands the player on wall, moves the player back to their original location
+     * @return true if the move is successful, false if the player is at the edge of the board or there is a wall in the way
+     */
 
     public boolean moveSouth(){
-        if (this.location.getLocation().getY() <= 0){    
+        if (location.getY() <= 0){    
             return false;
         }
         else{
-            this.location.move('S');
+            location.move('S');
         }   
-        if (board.getTile(this.location.getLocation()).equals(Board.WALL) == true) {
-            this.location.move('N');
+        if (board.getTile(location).equals(Board.WALL)) {
+            location.move('N');
             return false;
         }
         else{
             return true;
         }   
     }
+
+    /** 
+     * Move the player one square east on the board
+     * Checks that the player is not at the right-hand edge of the board
+     * If not, moves the player one square east
+     * If the move lands the player on wall, moves the player back to their original location
+     * @return true if the move is successful, false if the player is at the edge of the board or there is a wall in the way
+     */
 
     public boolean moveEast(){
-        if (this.location.getLocation().getX() >= board.getWidth()-1){    
+        if (location.getX() >= board.getWidth()-1){    
             return false;
         }
         else{
-            this.location.move('E');
+            location.move('E');
         }   
-        if (board.getTile(this.location.getLocation()).equals(Board.WALL) == true) {
-            this.location.move('W');
+        if (board.getTile(location).equals(Board.WALL)) {
+            location.move('W');
             return false;
         }
         else{
             return true;
         }   
     }
+
+    /** 
+     * Move the player one square west on the board
+     * Checks that the player is not at the left-hand edge of the board
+     * If not, moves the player one square west
+     * If the move lands the player on wall, moves the player back to their original location
+     * @return true if the move is successful, false if the player is at the edge of the board or there is a wall in the way
+     */
 
     public boolean moveWest(){
-        if (this.location.getLocation().getX() <= 0){    
+        if (location.getX() <= 0){    
             return false;
         }
         else{
-            this.location.move('W');
+            location.move('W');
         }   
-        if (board.getTile(this.location.getLocation()).equals(Board.WALL) == true) {
-            this.location.move('E');
+        if (board.getTile(location).equals(Board.WALL)) {
+            location.move('E');
             return false;
         }
         else{
@@ -102,9 +158,14 @@ public class Player {
         }   
     }
 
+    /** 
+     * If the player is on a gold tile, picks up the gold and sets the tile to empty
+     * @return true if the player picks up gold, false if there is no gold on the tile
+     */
+
     public boolean pickUp(){
-        if (board.isGold(this.location)){
-            board.setTile(this.location.getLocation(), new Tile('.', true));
+        if (board.getTile(location).equals(Board.GOLD)){
+            board.setTile(location, Board.EMPTY);
             addGold();
             return true;
         }
@@ -113,8 +174,13 @@ public class Player {
         }
     }
 
+    /** 
+     * Let's the player look around them on the board
+     * @return the visible board around the player as a 2D array of tiles governed by the player's see distance
+     */
+
     public Tile[][] look(){
-        Tile[][] visibleBoard = board.viewBoard(location.getLocation(),this.see);
+        Tile[][] visibleBoard = board.viewBoard(location,see);
         return visibleBoard;
     }
 }
