@@ -22,38 +22,36 @@ public class Game {
                 file.readFile();
                 System.out.println("Map Name: " + file.getMapName());
                 winningGold = file.getWinningGold();
-                board = new Board(file.getWidth(), file.getHeight(), file);
-                board.populateBoard(file.getMapFile());
+                board = new Board(file.getWidth(), file.getHeight(), file.getBoard());
                 break;
-            } 
-            catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("Please try a different game file");
-            continue;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                System.out.println("Please try a different game file");
+                continue;
             }
 
         }
         Player player1 = new Player(board); // Create the player
         BotPlayer bot = new BotPlayer(board); // Create the bot
 
-        /* Set the player initial location */
-               
         player1.setStartLocation();
+        
         board.setPlayer(player1);
-        bot.setStartLocation();
-        while (player1.location.equals(bot.location)){
+
+        do {
             bot.setStartLocation();
-        }
+        } while (player1.location.equals(bot.location));    
+
         board.setBot(bot);
 
         while (!game.isLost(player1, bot)) {
             
-            Input input = new Input(game, board, scanner);
-            input.getInput(player1);
-            
+            Input input = new Input(game, board, player1, scanner);
+            input.getInput();
+            System.out.println("Bot's turn");
             bot.decideAction(game); // Assume bot played first and said "HELLO"; then bot plays after player
-            
         }
+        
         System.out.println("LOSE");
         System.exit(0);
     }

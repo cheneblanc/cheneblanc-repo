@@ -70,92 +70,15 @@ public class Player {
      * @return true if the move is successful, false if the player is at the edge of the board or there is a wall in the way
      */
     
-    public boolean moveNorth(){
-        if (location.getY() >= board.getHeight()-1){    
+    public boolean movePlayer(char direction){
+        Location destination = location;
+        destination.move(direction);
+        if (board.isUnreachable(destination)){    
             return false;
-        }
-        else{
-            location.move('N');
-        }   
-        if (board.getTile(location)==(Board.WALL)) {
-            location.move('S');
-            return false;
-        }
-        else{
+        } else{
+            location = destination;
             return true;
-        }   
-    }
-
-    /** 
-     * Move the player one square south on the board
-     * Checks that the player is not at the bottom edge of the board
-     * If not, moves the player one square south
-     * If the move lands the player on wall, moves the player back to their original location
-     * @return true if the move is successful, false if the player is at the edge of the board or there is a wall in the way
-     */
-
-    public boolean moveSouth(){
-        if (location.getY() <= 0){    
-            return false;
         }
-        else{
-            location.move('S');
-        }   
-        if (board.getTile(location)==(Board.WALL)) {
-            location.move('N');
-            return false;
-        }
-        else{
-            return true;
-        }   
-    }
-
-    /** 
-     * Move the player one square east on the board
-     * Checks that the player is not at the right-hand edge of the board
-     * If not, moves the player one square east
-     * If the move lands the player on wall, moves the player back to their original location
-     * @return true if the move is successful, false if the player is at the edge of the board or there is a wall in the way
-     */
-
-    public boolean moveEast(){
-        if (location.getX() >= board.getWidth()-1){    
-            return false;
-        }
-        else{
-            location.move('E');
-        }   
-        if (board.getTile(location)==(Board.WALL)) {
-            location.move('W');
-            return false;
-        }
-        else{
-            return true;
-        }   
-    }
-
-    /** 
-     * Move the player one square west on the board
-     * Checks that the player is not at the left-hand edge of the board
-     * If not, moves the player one square west
-     * If the move lands the player on wall, moves the player back to their original location
-     * @return true if the move is successful, false if the player is at the edge of the board or there is a wall in the way
-     */
-
-    public boolean moveWest(){
-        if (location.getX() <= 0){    
-            return false;
-        }
-        else{
-            location.move('W');
-        }   
-        if (board.getTile(location)==(Board.WALL)) {
-            location.move('E');
-            return false;
-        }
-        else{
-            return true;
-        }   
     }
 
     /** 

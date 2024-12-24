@@ -13,6 +13,7 @@ public class BotPlayer extends Player{
     public BotPlayer(Board board) {
         super(board);
         setStrategy();
+        System.out.println("Bot strategy: " + strategy);
     }
     
     /**
@@ -29,6 +30,8 @@ public class BotPlayer extends Player{
             case 1:
                 strategy = "looter";
                 break;
+            default:
+                strategy = "chaser";
         }
     }
     
@@ -36,22 +39,62 @@ public class BotPlayer extends Player{
      * Moves the bot in a random direction.
      * @deprecated - this method is not used in the final version of the game, but was built initially for the bot to move randomly.
      */
-
+    @Deprecated
     private void moveBot(){
         int random = (int) (Math.random() * 4);
         switch (random) {
             case 0:
-                moveNorth();
+                movePlayer('N');
                 break;
             case 1:
-                moveSouth();
+                movePlayer('S');
                 break;
             case 2:
-                moveEast();
+                movePlayer('E');
                 break;
             case 3:
-                moveWest();
+                movePlayer('W');
                 break;
+            default:
+                break;
+        }
+    }
+    /**
+     * Determines the logic for the action that the bot will take
+     * @param game the game the bot is playing
+     * Works using the concept of a target
+     * If the bot has no target, it will look to try to find one
+     * 
+     */
+
+     public void decideAction(Game game){
+        if (target == null){
+            botLook();
+            return;
+        }
+        
+        if (location.equals(target)){
+            target = null;
+            playerSeenLocation = null;
+            if (this.location.equals(exitLocation) && targetType == Board.EXIT){
+                System.out.println("Bot has exited the dungeon with " + getGold() + " gold.");
+                System.out.println("LOSE");
+                System.exit(0);
+            }
+            if (this.location.equals(nearestGoldLocation) && targetType == Board.GOLD){
+                pickUp();
+                nearestGoldLocation = null;
+                if (getGold()==game.getWinningGold()){
+                    targetType = Board.EXIT;
+                }
+                else targetType = 'X';
+            }
+            else {
+                botLook();
+            }
+        }
+        else {
+            moveToTarget(target);
         }
     }
 
@@ -59,9 +102,8 @@ public class BotPlayer extends Player{
      * Allows the bot to perform the LOOK action and remember the locations of the player, the nearest gold and the nearest exit (if seen).
      * Calls the getNewTarget method to decide where to move next at the end of the method, based on the information found in the LOOK action.
      */
-    
     private void botLook(){
-        
+        System.out.println("Bot is looking");
         char [][] seenBoard = this.look();
         for (int x = 0; x < seenBoard.length; x++){
             for (int y = 0; y< seenBoard[x].length; y++){
@@ -95,140 +137,110 @@ public class BotPlayer extends Player{
     }
 
     /**
-     * Determines the logic for the action that the bot will take
-     * @param game the game the bot is playing
-     * Works using the concept of a target
-     * If the bot has no target, it will look to try to find one
-     * 
+     * Determines the bot's next target based on its strategy.
+     * Chasers will target a player's location if they have been seen, otherwise will move to a default target.
+     * Looters will target the nearest gold if they see any, otherwise will move to a default target.
+     * Looters will target the exit if they have enough gold to win the game.
+     * @return the Location of the bot's next target
      */
 
-    public void decideAction(Game game){
-        if (target == null){
-            botLook();
-            return;
-        }
-        
-        if (this.location.equals(target)){
-            target = null;
-            playerSeenLocation = null;
-            if (this.location.equals(exitLocation) && targetType == Board.EXIT){
-                System.out.println("Bot has exited the dungeon with " + getGold() + " gold.");
-                System.out.println("LOSE");
-                System.exit(0);
-            }
-            if (this.location.equals(nearestGoldLocation) && targetType == Board.GOLD){
-                pickUp();
-                nearestGoldLocation = null;
-                if (getGold()==game.getWinningGold()){
-                    targetType = Board.EXIT;
-                }
-                else targetType = 'X';
-            }
-            else {
-                botLook();
-            }
-        }
-        else {
-            moveToTarget(target);
-        }
-    }
-
     public Location getNewTarget(){
-           
+        System.out.println("Bot is getting a new target");
         switch (strategy){
 
             case "chaser":
                 if (!(playerSeenLocation == null)){
                     target = playerSeenLocation;
                     targetType = Board.PLAYER;
-                }
-                else {
-                    target = getRandomTarget();
+                } else {
+                    target = getDefaultTarget();
                 }
                 break;
-            // If the bot is in looter mode, it will move towards the nearest gold.    
+            
             case "looter":
-                System.out.println("Bot is in looter mode");
                 if (targetType == Board.EXIT){
                     if (exitLocation == null){
                         if (target == null){
-                            target = getRandomTarget();
+                            target = getDefaultTarget();
                         }
-                    }
-                    else{
+                    } else {
                         target = exitLocation;
+                        break;
                     }
                 }
-                
                 if (nearestGoldLocation == null){
-                System.out.println("Bot doesn't see any gold");
                     if (target == null){
-                                System.out.println("Bot has no target");
-                                target = getRandomTarget();
-                            }
-                        }
-                    else{
-                        target = nearestGoldLocation;
-                        targetType = Board.GOLD;
+                        target = getDefaultTarget();
                     }
-                    break;
+                } else {
+                    target = nearestGoldLocation;
+                    targetType = Board.GOLD;
+                }
+                break;
+                 
             default:
-                System.out.println("Bot is in random strategy");
-                target = getRandomTarget();    
+                target = getDefaultTarget();    
                 }
         return target;
     }
 
+    /**
+     * Moves the bot to the target location via the shortest route.
+     * NOTE: walls within the game board will block the bot's path as currently implemented.
+     * @param target - the target location
+     */
+    
     public void moveToTarget(Location target){
         
-        int xDelta = this.location.getLocation().getX() - target.getLocation().getX();
-        int yDelta = this.location.getLocation().getY() - target.getLocation().getY();
+        int xDelta = this.location.getX() - target.getX();
+        int yDelta = this.location.getY() - target.getY();
         
         if (Math.abs(xDelta) > Math.abs(yDelta)){
             if (xDelta > 0){
-                moveWest();
-            }
-            else{
-                moveEast();
+                movePlayer('W');
+            } else {
+                movePlayer('E');
             }
         }
         else{
             if (yDelta > 0){
-                moveSouth();
-            }
-            else{
-                moveNorth();
+                movePlayer('S');
+            } else {
+                movePlayer('E');
             }
         }    
     }
 
-    // If no better target, target moving to a corner of the current visble board.
-    public Location getRandomTarget(){
+    /** 
+     * If no better target, try to target moving to edge of the current visble board
+     * If the target is a wall, get a random target within the current seen area that isn't a wall or the current square.
+     * @return the Location of the bot's default target
+    */
+    public Location getDefaultTarget(){
         Location newTarget = null;
         // Try moving to one of the corners of the visible board if there's no better target
-        do{
-            int random = (int) (Math.random() * 4);
-            switch (random) {
-                case 0: 
-                    newTarget = new Location (location.getX() + getSee(), location.getY()+getSee());
-                    break;
-                case 1:
-                    newTarget = new Location (location.getX() - getSee(), location.getY()+getSee());
-                    break;
-                case 2:
-                    newTarget = new Location (location.getX() + getSee(), location.getY()-getSee());
-                    break;
-                case 3:
-                    newTarget = new Location (location.getX() - getSee(), location.getY()-getSee());
-                    break;
+        
+        int random = (int) (Math.random() * 4);
+        switch (random) {
+            case 0: 
+                newTarget = new Location (location.getX() + getSee(), location.getY());
+                break;
+            case 1:
+                newTarget = new Location (location.getX() - getSee(), location.getY());
+                break;
+            case 2:
+                newTarget = new Location (location.getX(), location.getY() - getSee());
+                break;
+            case 3:
+                newTarget = new Location (location.getX(), location.getY() + getSee());
+                break;
             }
-        // Keep within two squares of the edge (unless there's a better target)    
-        } while (newTarget.getX() < 2 || newTarget.getX() >= board.getWidth()-2 || newTarget.getY() < 2 || newTarget.getY() >= board.getHeight()-2);
+        // If possible, only go close     
         // If this target is a wall, just get a random target within the current seen area that isn't a wall or the current square
-        while (board.getTile(newTarget)==(Board.WALL) || newTarget.equals(this.location)) {
+        while (board.isUnreachable(newTarget) || newTarget.equals(this.location)) {
             newTarget = new Location ((int) (Math.random() * (2*getSee()+1))-getSee(), (int) (Math.random() * (2*getSee()+1))-getSee());
         }
-
+        System.out.println("Default target: " + newTarget);
         return newTarget;
     }
 }    

@@ -8,7 +8,6 @@ public class Board {
     private char[][] board;
     private int width;
     private int height;
-    private GameFile gameFile; 
     public static final char GOLD = 'G';
     public static final char WALL = '#';
     public static final char EMPTY = '.';
@@ -18,11 +17,10 @@ public class Board {
     private Player player;
     private BotPlayer bot;
 
-    public Board(int width, int height, GameFile gameFile) {
+    public Board(int width, int height, char[][] board) {
         this.width = width;
         this.height = height;
-        this.gameFile = gameFile;
-        this.board = new char[width][height];
+        this.board = board;
     }
 
     public int getWidth() {
@@ -65,39 +63,6 @@ public class Board {
      * @throws Exception if there is not enough gold
      * @param mapFile
      */
-    
-    public void populateBoard(char[][] mapFile) throws Exception {
-        int exitCount = 0;
-        int goldCount = 0;
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                switch (mapFile[x][y]) {
-                    case 'G':
-                        board[x][y] = GOLD;
-                        goldCount ++;
-                        break;
-                    case '#':
-                        board[x][y] = WALL;
-                        break;
-                    case '.':
-                        board[x][y] = EMPTY;
-                        break;
-                    case 'E':
-                        board[x][y] = EXIT;
-                        exitCount ++;
-                        break;
-                    default:
-                        throw new Exception("Invalid character in map file");
-                }
-            }  
-        } 
-        if (exitCount == 0){
-            throw new Exception("No exit character E in map file");
-        }    
-        if (goldCount < gameFile.getWinningGold()){
-            throw new Exception("Total number of Gold characters G in map file is less than the winning gold amount");
-        }
-    }
 
     /**
      * Generates the portion of the board that is visible to the player
@@ -112,30 +77,39 @@ public class Board {
         
         for (int y = 0; y <= see*2; y++) {
             for (int x = 0; x <= see*2; x++) {
-                // If outside the board, set a wall character
+                
+                // Translate the x and y co-ordinates of the visible board array to the x and y co-ordinates of the actual board
                 int boardX = location.getX() + x - see;
                 int boardY = location.getY() + y - see;
+
                 Location boardLocation = new Location(boardX, boardY);
-                if (boardX < 0 || boardX >= width-1 || boardY < 0 || boardY >= height-1) {
+
+                // If outside the board, set a wall character
+                if (isUnreachable(boardLocation)) {
                     visibleBoard[x][y] = WALL;
                     continue;
-                }
-                // Print the player location
-                if(boardLocation.equals(player.location)){
+                } else if(boardLocation.equals(player.location)){ 
                     visibleBoard[x][y] = PLAYER;
                     continue;
-                }
-                // Print the bot location
-                if(boardLocation.equals(bot.location)){
+                } else if(boardLocation.equals(bot.location)){
                     visibleBoard[x][y] = BOT;
                     continue;
-                }
-                else{
+                } else{
                     visibleBoard[x][y] = getTile(boardLocation);
                 }
             }
         }
         return visibleBoard;
+    }
+
+    /**
+     * Check if a location is off the board
+     * @param location the location to check
+     * @return true if the location is off the board, false otherwise
+     */
+
+    public Boolean isUnreachable (Location location){
+        return (location.getX() < 0 || location.getX() >= width-1 || location.getY() < 0 || location.getY() >= height-1 || getTile(location) == WALL);
     }
 
     
