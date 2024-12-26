@@ -1,15 +1,17 @@
 /**
  * Extends the Player class to create a bot that can play the game autonomously.
- */
+ */ 
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class BotPlayer extends Player{
-    private char targetType;
-    private String strategy;
-    //private Location playerSeenLocation;
-    //private Location exitLocation = null;
-    //private Location nearestGoldLocation;
-    private Location target;
-    private Board knownBoard;
+    private String strategy; // LOOTER (tries to get gold, then exit) or CHASER (looks for player then chases them)
+    private char targetType; //(the type of tile the bot is currently targeting)
+    private Location target; // the (x,y) location of the bot's target
+    private Board knownBoard; // the bot's knowledge of the game board
+    private ArrayList<Character> path; // the path the bot will take to reach its target
     
 
     public BotPlayer(Board board) {
@@ -104,7 +106,7 @@ public class BotPlayer extends Player{
                 botLook();
             }
         } else {
-            moveToTarget(target);
+            moveToTarget();
         }
         System.out.println("Bot's location: " + this.location.getX() + "," + this.location.getY());
         System.out.println("Bot's target: " + target.getX() + "," + target.getY());
@@ -194,8 +196,12 @@ public class BotPlayer extends Player{
      * @param target - the target location
      */
     
-    public void moveToTarget(Location target){
+    public void moveToTarget(){
         
+        if (path.isEmpty()) {
+            return;
+        }
+
         int xDelta = this.location.getX() - target.getX();
         System.out.println("xDelta: " + xDelta);
         int yDelta = this.location.getY() - target.getY();
@@ -215,15 +221,59 @@ public class BotPlayer extends Player{
                 movePlayer('S');
                 System.out.println("Bot is moving south");
             } else {
-                movePlayer('E');
+                movePlayer('N');
                 System.out.println("Bot is moving north");
             }
         }    
     }
 
+    /**
+     * Create a two dimensional array of locations, with each location storing a String.
+     * The string reprsents the set of directions to get to that location from the bot's current location.
+     * Work outwards from the bot's current location, checking N, S, E and W directions from that location
+     * If the direction is reachable, append the direction required to reach it to the current location's string and store it in the location
+     * If the location is the target, return the string of directions to get there
+     * Move on to the next location in the queue
+     * @return the path to the target
+     */
+    public String findPath(){
+        String [][] directions = new String [knownBoard.getWidth()][knownBoard.getHeight()];
+        Queue<Location> queue = new LinkedList<>();
+    
+        queue.add(this.location);
+        directions[this.location.getX()][this.location.getY()] = "";
+    
+        while (!queue.isEmpty()) {
+            Location current = queue.poll();
+        
+            if (current.equals(target)) {
+                return directions[current.getX()][current.getY()];
+            }
+        
+            char[] possibleMoves = {'W', 'E', 'N', 'S'};
+        
+            for (char direction : possibleMoves) {
+                Location newLoc = new Location(current.getX(), current.getY());
+                newLoc.move(direction);
+            
+                // Check bounds
+                if (board.isUnreachable(newLoc)) {
+                    continue;
+                }
+            
+                if (!board.isUnreachable(newLoc) && directions[newLoc.getX()][newLoc.getY()] == null) {
+                    directions[newLoc.getX()][newLoc.getY()] = directions[current.getX()][current.getY()] + direction;
+                    queue.add(newLoc);
+                }
+        }
+    }
+    return null;
+}
+
+
     /** 
      * If no better target, try to target moving to edge of the current visble board
-     * If the target is a wall, get a random target within the current seen area that isn't a wall or the current square.
+     * If the target is a wall, just get a random target within the current seen area that isn't a wall or the current square.
      * @return the Location of the bot's default target
     */
     public Location getDefaultTarget(){
