@@ -6,6 +6,7 @@
 
 public class Board {
     private char[][] board;
+    private int winningGold;
     private int width;
     private int height;
     public static final char GOLD = 'G';
@@ -14,15 +15,21 @@ public class Board {
     public static final char EXIT = 'E';
     public static final char PLAYER = 'P';
     public static final char BOT = 'B';
+    public static final char UNKNOWN = '?';
     private Player player;
     private BotPlayer bot;
 
-    public Board(int width, int height, char[][] board) {
+    public Board(int width, int height) {
         this.width = width;
         this.height = height;
-        this.board = board;
+        this.board = new char[width][height];
     }
 
+    public Board ()
+    {
+        this.width = 0;
+        this.height = 0;
+    }
     public int getWidth() {
         return width;
     }
@@ -34,7 +41,7 @@ public class Board {
     public char getTile(Location location) {
         return board[location.getX()][location.getY()];
     }
-    
+
     /**
      * Set a tile at a location on the board
      * @param location the location of the tile to be set
@@ -46,6 +53,14 @@ public class Board {
         board[location.getX()][location.getY()] = tile;
     }
 
+    public void setWinningGold(int winningGold) {
+        this.winningGold = winningGold;
+    }
+
+    public void setBoard(char[][] board) {
+        this.board = board;
+    }
+
     public void setBot(BotPlayer bot){
         this.bot = bot;
     }
@@ -53,6 +68,10 @@ public class Board {
     public void setPlayer(Player player){
         this.player = player;
     }
+
+    public int getWinningGold() {
+        return winningGold;
+    }   
 
     /**
      * Populate the board with the contents of the map file
@@ -108,8 +127,12 @@ public class Board {
      * @return true if the location is off the board, false otherwise
      */
 
-    public Boolean isUnreachable (Location location){
-        return (location.getX() < 0 || location.getX() >= width-1 || location.getY() < 0 || location.getY() >= height-1 || getTile(location) == WALL);
+    public Boolean isOutOfBounds (Location location){
+        return (location.getX() < 0 || location.getX() >= width || location.getY() < 0 || location.getY() >= height);
+    }
+    
+     public Boolean isUnreachable (Location location){
+        return (isOutOfBounds(location) || getTile(location) == WALL);
     }
 
     

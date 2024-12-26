@@ -51,7 +51,7 @@ public class Input {
                 break;
             
                 case "HELLO":    
-                    System.out.println("Gold to win: " + game.getWinningGold());
+                    System.out.println("Gold to win: " + board.getWinningGold());
                     validCommand = true;
                     break;
             
@@ -88,6 +88,7 @@ public class Input {
                     break;
             
                 case "LOOK":
+                    System.out.print("Looking");
                     char [][] visibleBoard = player.look();    
                     for (int y = visibleBoard.length-1; y > 0; y--) {
                         for (int x = 0; x < visibleBoard[y].length; x++) {

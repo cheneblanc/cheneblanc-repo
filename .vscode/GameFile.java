@@ -87,9 +87,10 @@ public class GameFile {
             }   
                     
             height = mapLines.size();
+            System.out.println("Height: " + height);
             
             width = mapLines.get(0).length(); // Assume all rows are the same length as the first row
-
+            System.out.println("Width: " + width);
             // Create a 2D array containing the map characters from the file
 
             board = new char[width][height];

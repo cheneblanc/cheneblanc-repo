@@ -43,15 +43,19 @@ public class Player {
      */
 
     public void setStartLocation(){
-        location = new Location(0,0);
+        location = new Location((int)(Math.random() * board.getWidth()), (int)(Math.random() * board.getHeight()));
         try{
             int tries = 0;
             int maxTries = board.getWidth() * board.getHeight();
-            while (!(board.getTile(location)==(Board.EMPTY) || board.getTile(location)==(Board.EXIT))){
-                location.setLocation((int) (Math.random() * board.getWidth()), (int) (Math.random() * board.getHeight()));
+            while ((board.isUnreachable(location) || board.getTile(location) == Board.EXIT) && tries < maxTries){
+                System.out.println("Try " + tries + 
+                             ": Location(" + location.getX() + "," + location.getY() + ")" +
+                             " Unreachable: " + board.isUnreachable(location) +
+                             " Is Exit: " + (board.getTile(location) == Board.EXIT));
+                location = new Location((int)(Math.random() * board.getWidth()), (int)(Math.random() * board.getHeight()));
                 tries++;
             }
-            if (tries >= maxTries){
+            if (tries == maxTries){
                 throw new Exception("No locations available");
             }
         }
