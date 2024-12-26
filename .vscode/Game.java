@@ -32,24 +32,18 @@ public class Game {
         }
         Player player1 = new Player(board); // Create the player
         BotPlayer bot = new BotPlayer(board); // Create the bot
-        System.out.println("Setting player's start location");
         player1.setStartLocation();
-        System.out.println("Player's start location: " + player1.location.getLocation());
         board.setPlayer(player1);
-        System.out.println("Setting bot's start location");
         do {
             bot.setStartLocation();
         } while (player1.location.equals(bot.location));    
-        System.out.println("Bot's start location: " + bot.location.getLocation());
         board.setBot(bot);
-        System.out.println("Game start");
         while (!game.isLost(player1, bot)) {
             System.out.println("Player's turn");
             Input input = new Input(game, board, player1, scanner);
             input.getInput();
             System.out.println("Bot's turn");
             bot.decideAction(game); // Assume bot played first and said "HELLO"; then bot plays after player
-            System.out.println("Bot's location: " + bot.location.getX() + ", " + bot.location.getY());  
         }
         
         System.out.println("LOSE");

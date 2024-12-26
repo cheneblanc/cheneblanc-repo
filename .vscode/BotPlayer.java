@@ -84,25 +84,31 @@ public class BotPlayer extends Player{
      */
 
      public void decideAction(Game game){
+        System.out.println("Bot is deciding action");
         if (target == null){
             botLook();
-            return;
         } else if (location.equals(target)){
+            System.out.println("Bot has reached target");
             target = null;
             if (board.getTile(this.location) == Board.EXIT && targetType == Board.EXIT){
                 System.out.println("Bot has exited the dungeon with " + getGold() + " gold.");
                 System.out.println("LOSE");
                 System.exit(0);
-            }
-            if (board.getTile(this.location) == Board.GOLD && targetType == Board.GOLD){
+            } else if (board.getTile(this.location) == Board.GOLD && targetType == Board.GOLD){
+                System.out.println("Bot has picked up gold");
                 pickUp();
-                getNewTarget();
+            } else if (board.getTile(this.location) == Board.EMPTY && targetType == Board.PLAYER){
+                knownBoard.setTile(this.location, Board.EMPTY);
+                botLook();
             } else {
                 botLook();
             }
         } else {
             moveToTarget(target);
         }
+        System.out.println("Bot's location: " + this.location.getX() + "," + this.location.getY());
+        System.out.println("Bot's target: " + target.getX() + "," + target.getY());
+        System.out.println("Bot's target type: " + targetType);
     }
 
     
@@ -116,10 +122,9 @@ public class BotPlayer extends Player{
         char [][] seenBoard = this.look();
         for (int x = 0; x < seenBoard.length; x++){
             for (int y = 0; y< seenBoard[x].length; y++){
-                // If bot players sees the player, the exit or gold, store its location.
-                
                 int realBoardX = x+this.location.getLocation().getX()-getSee();
                 int realBoardY = y+this.location.getLocation().getY()-getSee();
+                
                 if (board.isOutOfBounds(new Location(realBoardX, realBoardY))){
                     continue;
                 } else knownBoard.setTile(new Location(realBoardX, realBoardY), seenBoard[x][y]);
@@ -135,12 +140,15 @@ public class BotPlayer extends Player{
      */
 
     private Location findNearest(char targetType){
+        System.out.println("Bot is finding nearest " + targetType);
         Location nearest = null;
         for (int x = 0; x < knownBoard.getWidth(); x++){
             for (int y = 0; y < knownBoard.getHeight(); y++){
                 if (knownBoard.getTile(new Location(x,y)) == targetType){
                     Location newNearest = new Location(x,y);
-                    if ((this.location.distanceFrom(newNearest)) < this.location.distanceFrom(nearest)){
+                    if (nearest == null){
+                        nearest = newNearest;
+                    } else if ((this.location.distanceFrom(newNearest)) < this.location.distanceFrom(nearest)){
                         nearest = newNearest;
                     }
                 }
@@ -173,12 +181,10 @@ public class BotPlayer extends Player{
             default:
                 targetType = 'X';    
         }
-        System.out.println("Target type: " + targetType);
         target = findNearest(targetType);
         if (target == null){
             target = getDefaultTarget();
         }
-        System.out.println("New target: " + target);
         return target;
     }
 
@@ -191,20 +197,26 @@ public class BotPlayer extends Player{
     public void moveToTarget(Location target){
         
         int xDelta = this.location.getX() - target.getX();
+        System.out.println("xDelta: " + xDelta);
         int yDelta = this.location.getY() - target.getY();
+        System.out.println("yDelta: " + yDelta);
         
         if (Math.abs(xDelta) > Math.abs(yDelta)){
             if (xDelta > 0){
                 movePlayer('W');
+                System.out.println("Bot is moving west");
             } else {
                 movePlayer('E');
+                System.out.println("Bot is moving east");
             }
         }
         else{
             if (yDelta > 0){
                 movePlayer('S');
+                System.out.println("Bot is moving south");
             } else {
                 movePlayer('E');
+                System.out.println("Bot is moving north");
             }
         }    
     }
@@ -238,7 +250,6 @@ public class BotPlayer extends Player{
         while (board.isUnreachable(newTarget) || newTarget.equals(this.location)) {
             newTarget = new Location ((int) (Math.random() * (2*getSee()+1))-getSee(), (int) (Math.random() * (2*getSee()+1))-getSee());
         }
-        System.out.println("Default target: " + newTarget);
         return newTarget;
     }
 }    
