@@ -170,14 +170,15 @@ public class BotPlayer extends Player{
         switch (strategy){
 
             case "chaser":
-                    targetType = Board.PLAYER;
-                    break;
+                targetType = Board.PLAYER;
+                break;
             
             case "looter":
                 if (getGold() < board.getWinningGold()){
                     targetType = Board.GOLD;
                 } else targetType = Board.EXIT;
-                 
+                break;
+                
             default:
                 targetType = 'X';    
         }
@@ -210,7 +211,7 @@ public class BotPlayer extends Player{
     
         while (!queue.isEmpty()) {
             Location current = queue.poll();
-            System.out.println("\nChecking from current location: " + current.getX() + "," + current.getY());
+            //System.out.println("\nChecking from current location: " + current.getX() + "," + current.getY());
             
             if (current.equals(target)) {
                 System.out.println("Found target! Path: " + directions[current.getX()][current.getY()]);
@@ -222,7 +223,7 @@ public class BotPlayer extends Player{
                 Location newLoc = new Location(current.getX(), current.getY());
                 newLoc.move(direction);
                 
-                System.out.println("\nTrying " + direction + " to: " + newLoc.getX() + "," + newLoc.getY());
+                //System.out.println("\nTrying " + direction + " to: " + newLoc.getX() + "," + newLoc.getY());
                 
                 // Check bounds first
                 if (newLoc.getX() < 0 || newLoc.getX() >= knownBoard.getWidth() || 
@@ -232,10 +233,10 @@ public class BotPlayer extends Player{
                 }
                 
                 // Debug prints for each condition
-                System.out.println("Target is: " + target.getX() + "," + target.getY());
-                System.out.println("isUnreachable: " + board.isUnreachable(newLoc));
-                System.out.println("directions is null: " + (directions[newLoc.getX()][newLoc.getY()] == null));
-                System.out.println("Known board tile: " + knownBoard.getTile(newLoc));
+                //System.out.println("Target is: " + target.getX() + "," + target.getY());
+                //System.out.println("isUnreachable: " + board.isUnreachable(newLoc));
+                //System.out.println("directions is null: " + (directions[newLoc.getX()][newLoc.getY()] == null));
+                //System.out.println("Known board tile: " + knownBoard.getTile(newLoc));
                 
                 if (!board.isUnreachable(newLoc) && 
                     directions[newLoc.getX()][newLoc.getY()] == null && 
@@ -243,17 +244,17 @@ public class BotPlayer extends Player{
                     
                     directions[newLoc.getX()][newLoc.getY()] = directions[current.getX()][current.getY()] + direction;
                     queue.add(newLoc);
-                    System.out.println("Added to queue with path: " + directions[newLoc.getX()][newLoc.getY()]);
+                    //System.out.println("Added to queue with path: " + directions[newLoc.getX()][newLoc.getY()]);
                 } else {
-                    System.out.println("Skipped because: " + 
-                        (board.isUnreachable(newLoc) ? "unreachable " : "") +
-                        (directions[newLoc.getX()][newLoc.getY()] != null ? "already visited " : "") +
-                        (knownBoard.getTile(current) == Board.UNKNOWN ? "unknown tile" : ""));
+                    //System.out.println("Skipped because: " + 
+                    //    (board.isUnreachable(newLoc) ? "unreachable " : "") +
+                    //    (directions[newLoc.getX()][newLoc.getY()] != null ? "already visited " : "") +
+                    //    (knownBoard.getTile(current) == Board.UNKNOWN ? "unknown tile" : ""));
                 }
             }
         }
         
-        System.out.println("No path found!");
+        //System.out.println("No path found!");
         return null;
     }
 
@@ -296,7 +297,7 @@ public class BotPlayer extends Player{
         path = findPath();
         while (this.path == null){
             target = getDefaultTarget();
-            findPath();
+            path=findPath();
         }       }
 
 

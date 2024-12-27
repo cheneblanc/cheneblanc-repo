@@ -42,6 +42,8 @@ public class Game {
             System.out.println("Player's turn");
             Input input = new Input(game, board, player1, scanner);
             input.getInput();
+            System.out.println("Player's location " + player1.location.getX() + " " + player1.location.getY());
+            System.out.println("Player's tile " + board.getTile(player1.location));
             System.out.println("Bot's turn");
             bot.decideAction(game); // Assume bot played first and said "HELLO"; then bot plays after player
         }

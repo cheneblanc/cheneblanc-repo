@@ -71,7 +71,7 @@ public class Player {
      */
     
     public boolean movePlayer(char direction){
-        Location destination = location;
+        Location destination = new Location (location.getX(), location.getY());
         destination.move(direction);
         if (board.isUnreachable(destination)){    
             return false;
