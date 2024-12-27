@@ -2,7 +2,6 @@
  * Extends the Player class to create a bot that can play the game autonomously.
  */ 
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -11,7 +10,7 @@ public class BotPlayer extends Player{
     private char targetType; //(the type of tile the bot is currently targeting)
     private Location target; // the (x,y) location of the bot's target
     private Board knownBoard; // the bot's knowledge of the game board
-    private ArrayList<Character> path; // the path the bot will take to reach its target
+    private String path; // the path the bot will take to reach its target
     
 
     public BotPlayer(Board board) {
@@ -88,7 +87,7 @@ public class BotPlayer extends Player{
      public void decideAction(Game game){
         System.out.println("Bot is deciding action");
         if (target == null){
-            botLook();
+            planRoute();   
         } else if (location.equals(target)){
             System.out.println("Bot has reached target");
             target = null;
@@ -101,9 +100,9 @@ public class BotPlayer extends Player{
                 pickUp();
             } else if (board.getTile(this.location) == Board.EMPTY && targetType == Board.PLAYER){
                 knownBoard.setTile(this.location, Board.EMPTY);
-                botLook();
+                planRoute();
             } else {
-                botLook();
+                planRoute();
             }
         } else {
             moveToTarget();
@@ -132,7 +131,6 @@ public class BotPlayer extends Player{
                 } else knownBoard.setTile(new Location(realBoardX, realBoardY), seenBoard[x][y]);
             }
         }    
-        getNewTarget();
     }
 
     /**
@@ -191,43 +189,7 @@ public class BotPlayer extends Player{
     }
 
     /**
-     * Moves the bot to the target location via the shortest route.
-     * NOTE: walls within the game board will block the bot's path as currently implemented.
-     * @param target - the target location
-     */
-    
-    public void moveToTarget(){
-        
-        if (path.isEmpty()) {
-            return;
-        }
-
-        int xDelta = this.location.getX() - target.getX();
-        System.out.println("xDelta: " + xDelta);
-        int yDelta = this.location.getY() - target.getY();
-        System.out.println("yDelta: " + yDelta);
-        
-        if (Math.abs(xDelta) > Math.abs(yDelta)){
-            if (xDelta > 0){
-                movePlayer('W');
-                System.out.println("Bot is moving west");
-            } else {
-                movePlayer('E');
-                System.out.println("Bot is moving east");
-            }
-        }
-        else{
-            if (yDelta > 0){
-                movePlayer('S');
-                System.out.println("Bot is moving south");
-            } else {
-                movePlayer('N');
-                System.out.println("Bot is moving north");
-            }
-        }    
-    }
-
-    /**
+     * Method to find a path to the target, if there is one on the knownBoard
      * Create a two dimensional array of locations, with each location storing a String.
      * The string reprsents the set of directions to get to that location from the bot's current location.
      * Work outwards from the bot's current location, checking N, S, E and W directions from that location
@@ -236,40 +198,64 @@ public class BotPlayer extends Player{
      * Move on to the next location in the queue
      * @return the path to the target
      */
-    public String findPath(){
-        String [][] directions = new String [knownBoard.getWidth()][knownBoard.getHeight()];
+    public String findPath() {
+        String[][] directions = new String[knownBoard.getWidth()][knownBoard.getHeight()];
         Queue<Location> queue = new LinkedList<>();
-    
+        
+        System.out.println("Starting path find from: " + this.location.getX() + "," + this.location.getY());
+        System.out.println("Target is: " + target.getX() + "," + target.getY());
+        
         queue.add(this.location);
         directions[this.location.getX()][this.location.getY()] = "";
     
         while (!queue.isEmpty()) {
             Location current = queue.poll();
-        
+            System.out.println("\nChecking from current location: " + current.getX() + "," + current.getY());
+            
             if (current.equals(target)) {
+                System.out.println("Found target! Path: " + directions[current.getX()][current.getY()]);
                 return directions[current.getX()][current.getY()];
             }
-        
+            
             char[] possibleMoves = {'W', 'E', 'N', 'S'};
-        
             for (char direction : possibleMoves) {
                 Location newLoc = new Location(current.getX(), current.getY());
                 newLoc.move(direction);
-            
-                // Check bounds
-                if (board.isUnreachable(newLoc)) {
+                
+                System.out.println("\nTrying " + direction + " to: " + newLoc.getX() + "," + newLoc.getY());
+                
+                // Check bounds first
+                if (newLoc.getX() < 0 || newLoc.getX() >= knownBoard.getWidth() || 
+                    newLoc.getY() < 0 || newLoc.getY() >= knownBoard.getHeight()) {
+                    System.out.println("Out of bounds, skipping");
                     continue;
                 }
-            
-                if (!board.isUnreachable(newLoc) && directions[newLoc.getX()][newLoc.getY()] == null) {
+                
+                // Debug prints for each condition
+                System.out.println("Target is: " + target.getX() + "," + target.getY());
+                System.out.println("isUnreachable: " + board.isUnreachable(newLoc));
+                System.out.println("directions is null: " + (directions[newLoc.getX()][newLoc.getY()] == null));
+                System.out.println("Known board tile: " + knownBoard.getTile(newLoc));
+                
+                if (!board.isUnreachable(newLoc) && 
+                    directions[newLoc.getX()][newLoc.getY()] == null && 
+                    knownBoard.getTile(newLoc) != Board.UNKNOWN) {
+                    
                     directions[newLoc.getX()][newLoc.getY()] = directions[current.getX()][current.getY()] + direction;
                     queue.add(newLoc);
+                    System.out.println("Added to queue with path: " + directions[newLoc.getX()][newLoc.getY()]);
+                } else {
+                    System.out.println("Skipped because: " + 
+                        (board.isUnreachable(newLoc) ? "unreachable " : "") +
+                        (directions[newLoc.getX()][newLoc.getY()] != null ? "already visited " : "") +
+                        (knownBoard.getTile(current) == Board.UNKNOWN ? "unknown tile" : ""));
                 }
+            }
         }
+        
+        System.out.println("No path found!");
+        return null;
     }
-    return null;
-}
-
 
     /** 
      * If no better target, try to target moving to edge of the current visble board
@@ -295,11 +281,34 @@ public class BotPlayer extends Player{
                 newTarget = new Location (location.getX(), location.getY() + getSee());
                 break;
             }
-        // If possible, only go close     
         // If this target is a wall, just get a random target within the current seen area that isn't a wall or the current square
         while (board.isUnreachable(newTarget) || newTarget.equals(this.location)) {
             newTarget = new Location ((int) (Math.random() * (2*getSee()+1))-getSee(), (int) (Math.random() * (2*getSee()+1))-getSee());
         }
+        targetType = Board.UNKNOWN; // Could actually be anything but wall (and isn't unknown), but doesn't matter.
         return newTarget;
+    }
+
+    private void planRoute(){
+        System.out.println("Bot is planning route");
+        botLook();
+        getNewTarget();
+        path = findPath();
+        while (this.path == null){
+            target = getDefaultTarget();
+            findPath();
+        }       }
+
+
+    /**
+     * Moves the bot to the target location via the path found by the findPath method.
+     * Move one turn at a time, removing the direction from the path each time.
+     * @param target - the target location
+     */
+    public void moveToTarget(){
+        System.out.println("Bot is moving to target");
+        char direction = path.charAt(0);
+        path = path.substring(1);
+        movePlayer(direction);
     }
 }    
