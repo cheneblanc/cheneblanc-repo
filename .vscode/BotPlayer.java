@@ -108,7 +108,6 @@ public class BotPlayer extends Player{
             moveToTarget();
         }
         System.out.println("Bot's location: " + this.location.getX() + "," + this.location.getY());
-        System.out.println("Bot's target: " + target.getX() + "," + target.getY());
         System.out.println("Bot's target type: " + targetType);
     }
 
@@ -178,7 +177,7 @@ public class BotPlayer extends Player{
                     targetType = Board.GOLD;
                 } else targetType = Board.EXIT;
                 break;
-                
+
             default:
                 targetType = 'X';    
         }
