@@ -38,14 +38,21 @@ public class Game {
             bot.setStartLocation();
         } while (player1.location.equals(bot.location));    
         board.setBot(bot);
+        
+        // Handle first turns separately to allow LOOTER to say HELLO on first turn; CHASER does't need this 
+        // Human plays first
+        Input input = new Input(game, board, player1, scanner);
+        input.getInput();
+        if (bot.getStrategy() != "LOOTER"){
+            bot.decideAction();
+        }
         while (!game.isLost(player1, bot)) {
             System.out.println("Player's turn");
-            Input input = new Input(game, board, player1, scanner);
             input.getInput();
             System.out.println("Player's location " + player1.location.getX() + " " + player1.location.getY());
             System.out.println("Player's tile " + board.getTile(player1.location));
             System.out.println("Bot's turn");
-            bot.decideAction(game); // Assume bot played first and said "HELLO"; then bot plays after player
+            bot.decideAction(); // Assume bot played first and said "HELLO"; then bot plays after player
         }
         
         System.out.println("LOSE");

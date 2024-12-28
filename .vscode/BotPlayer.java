@@ -40,6 +40,10 @@ public class BotPlayer extends Player{
         }
     }
 
+    public String getStrategy(){
+        return strategy;
+    }
+
     /**
      * Initialises the knownBoard to be the same size as the game board, but with all tiles set to unknown.
      */
@@ -84,7 +88,7 @@ public class BotPlayer extends Player{
      * 
      */
 
-     public void decideAction(Game game){
+     public void decideAction(){
         if (target == null){
             planRoute();   
         } else if (location.equals(target)){
