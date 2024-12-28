@@ -85,7 +85,6 @@ public class BotPlayer extends Player{
      */
 
      public void decideAction(Game game){
-        System.out.println("Bot is deciding action");
         if (target == null){
             planRoute();   
         } else if (location.equals(target)){
@@ -96,10 +95,9 @@ public class BotPlayer extends Player{
                 System.out.println("LOSE");
                 System.exit(0);
             } else if (board.getTile(this.location) == Board.GOLD && targetType == Board.GOLD){
-                System.out.println("Bot has picked up gold");
                 pickUp();
             } else if (board.getTile(this.location) == Board.EMPTY && targetType == Board.PLAYER){
-                knownBoard.setTile(this.location, Board.EMPTY);
+                knownBoard.setTile(this.location, Board.EMPTY); // May actually be Gold (unlikely) or Exit, but safest for bot to assume empty (we know it's not wall)
                 planRoute();
             } else {
                 planRoute();
@@ -107,8 +105,6 @@ public class BotPlayer extends Player{
         } else {
             moveToTarget();
         }
-        System.out.println("Bot's location: " + this.location.getX() + "," + this.location.getY());
-        System.out.println("Bot's target type: " + targetType);
     }
 
     
@@ -189,14 +185,14 @@ public class BotPlayer extends Player{
     }
 
     /**
-     * Method to find a path to the target, if there is one on the knownBoard
-     * Create a two dimensional array of locations, with each location storing a String.
-     * The string reprsents the set of directions to get to that location from the bot's current location.
+     * Method to find a path to the target, if there is one on the bot's knownBoard - simple version of breadth first search
+     * Create a two dimensional array of strings.
+     * Each string reprsents the set of directions needed to get to that location from the bot's current location.
      * Work outwards from the bot's current location, checking N, S, E and W directions from that location
-     * If the direction is reachable, append the direction required to reach it to the current location's string and store it in the location
+     * If the cell in that direction is reachable, append the direction required to reach it to the current location's string and store it in that cell
      * If the location is the target, return the string of directions to get there
      * Move on to the next location in the queue
-     * @return the path to the target
+     * @return the String containing the set of directions to reach the target from the current location if the target is found, otherwise null
      */
     public String findPath() {
         String[][] directions = new String[knownBoard.getWidth()][knownBoard.getHeight()];
@@ -237,7 +233,8 @@ public class BotPlayer extends Player{
                 //System.out.println("directions is null: " + (directions[newLoc.getX()][newLoc.getY()] == null));
                 //System.out.println("Known board tile: " + knownBoard.getTile(newLoc));
                 
-                if (!board.isUnreachable(newLoc) && 
+                // If there's a path to the new locaiton and it hasn't been visited, append the direction to it to the direction string and fill the tile with it
+                if (!knownBoard.isUnreachable(newLoc) && 
                     directions[newLoc.getX()][newLoc.getY()] == null && 
                     knownBoard.getTile(newLoc) != Board.UNKNOWN) {
                     
