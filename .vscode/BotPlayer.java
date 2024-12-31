@@ -133,7 +133,11 @@ public class BotPlayer extends Player{
     }
 
     /**
-     * Finds the nearest location of a given type on the knownBoard.
+     * Finds the nearest reachable location of a given type on the knownBoard.
+     * Runs through board and finds tiles of the target type.
+     * Checks if there is a path to the tile.
+     * If there is a path, it calculates the distance to the tile using the length of the path String.
+     * If the distance is less than the distance to the current nearest tile, it updates the nearest tile.
      * @param targetType - the type of tile to find the nearest location of
      * @return the Location of the nearest tile of the given type
      */
@@ -141,14 +145,17 @@ public class BotPlayer extends Player{
     private Location findNearest(char targetType){
         System.out.println("Bot is finding nearest " + targetType);
         Location nearest = null;
+        int distance = board.getHeight() * board.getWidth(); // Maximum possible distance
         for (int x = 0; x < knownBoard.getWidth(); x++){
             for (int y = 0; y < knownBoard.getHeight(); y++){
                 if (knownBoard.getTile(new Location(x,y)) == targetType){
                     Location newNearest = new Location(x,y);
-                    if (nearest == null){
+                    String newPath = findPath(newNearest);
+                    int newDistance = newPath.length();
+                    if ((nearest == null && path != null) || (newDistance < distance)){
+                        System.out.println("Bot has found a new nearest " + targetType);
                         nearest = newNearest;
-                    } else if ((this.location.distanceFrom(newNearest)) < this.location.distanceFrom(nearest)){
-                        nearest = newNearest;
+                        distance = newDistance;
                     }
                 }
             }
@@ -198,12 +205,9 @@ public class BotPlayer extends Player{
      * Move on to the next location in the queue
      * @return the String containing the set of directions to reach the target from the current location if the target is found, otherwise null
      */
-    public String findPath() {
+    public String findPath(Location destination) {
         String[][] directions = new String[knownBoard.getWidth()][knownBoard.getHeight()];
         Queue<Location> queue = new LinkedList<>();
-        
-        System.out.println("Starting path find from: " + this.location.getX() + "," + this.location.getY());
-        System.out.println("Target is: " + target.getX() + "," + target.getY());
         
         queue.add(this.location);
         directions[this.location.getX()][this.location.getY()] = "";
@@ -212,8 +216,7 @@ public class BotPlayer extends Player{
             Location current = queue.poll();
             //System.out.println("\nChecking from current location: " + current.getX() + "," + current.getY());
             
-            if (current.equals(target)) {
-                System.out.println("Found target! Path: " + directions[current.getX()][current.getY()]);
+            if (current.equals(destination)) {
                 return directions[current.getX()][current.getY()];
             }
             
@@ -221,35 +224,14 @@ public class BotPlayer extends Player{
             for (char direction : possibleMoves) {
                 Location newLoc = new Location(current.getX(), current.getY());
                 newLoc.move(direction);
-                
-                //System.out.println("\nTrying " + direction + " to: " + newLoc.getX() + "," + newLoc.getY());
-                
-                // Check bounds first
-                if (newLoc.getX() < 0 || newLoc.getX() >= knownBoard.getWidth() || 
-                    newLoc.getY() < 0 || newLoc.getY() >= knownBoard.getHeight()) {
-                    System.out.println("Out of bounds, skipping");
+                                
+                if (board.isUnreachable(newLoc)) {
                     continue;
                 }
                 
-                // Debug prints for each condition
-                //System.out.println("Target is: " + target.getX() + "," + target.getY());
-                //System.out.println("isUnreachable: " + board.isUnreachable(newLoc));
-                //System.out.println("directions is null: " + (directions[newLoc.getX()][newLoc.getY()] == null));
-                //System.out.println("Known board tile: " + knownBoard.getTile(newLoc));
-                
-                // If there's a path to the new locaiton and it hasn't been visited, append the direction to it to the direction string and fill the tile with it
-                if (!knownBoard.isUnreachable(newLoc) && 
-                    directions[newLoc.getX()][newLoc.getY()] == null && 
-                    knownBoard.getTile(newLoc) != Board.UNKNOWN) {
-                    
+                if (directions[newLoc.getX()][newLoc.getY()] == null && knownBoard.getTile(newLoc) != Board.UNKNOWN) {
                     directions[newLoc.getX()][newLoc.getY()] = directions[current.getX()][current.getY()] + direction;
                     queue.add(newLoc);
-                    //System.out.println("Added to queue with path: " + directions[newLoc.getX()][newLoc.getY()]);
-                } else {
-                    //System.out.println("Skipped because: " + 
-                    //    (board.isUnreachable(newLoc) ? "unreachable " : "") +
-                    //    (directions[newLoc.getX()][newLoc.getY()] != null ? "already visited " : "") +
-                    //    (knownBoard.getTile(current) == Board.UNKNOWN ? "unknown tile" : ""));
                 }
             }
         }
@@ -294,10 +276,10 @@ public class BotPlayer extends Player{
         System.out.println("Bot is planning route");
         botLook();
         getNewTarget();
-        path = findPath();
+        path = findPath(target);
         while (this.path == null){
             target = getDefaultTarget();
-            path=findPath();
+            path=findPath(target);
         }       }
 
 

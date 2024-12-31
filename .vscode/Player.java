@@ -14,7 +14,7 @@ public class Player {
     protected Board board;
     protected Location location;
     private int gold;
-    private int see = 15;
+    private int see = 2;
 
     public Player(Board board){ 
         this.board = board;
