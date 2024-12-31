@@ -8,10 +8,10 @@ import java.util.Scanner;
 
 public class Input {
         
-    private Game game;
-    private Board board;
-    private Player player;
-    private Scanner scanner;
+    private final Game game;
+    private final Board board;
+    private final Player player;
+    private final Scanner scanner;
 
     public Input(Game game, Board board, Player player, Scanner scanner) {
         this.game = game;   
@@ -38,70 +38,55 @@ public class Input {
             command = scanner.nextLine().toUpperCase();
         
             switch (command) {
-            
-                case "PICKUP":
-                Boolean pickup = player.pickUp();    
-                if (pickup) {
-                    System.out.println("Success. Gold Owned: " + player.getGold());
-                }    
-                else {
-                    System.out.println("Fail");
+                case "PICKUP" -> {
+                    Boolean pickup = player.pickUp();
+                    if (pickup) {
+                        System.out.println("Success. Gold Owned: " + player.getGold());
+                    } else {
+                        System.out.println("Fail");
+                    }
+                    validCommand = true;
                 }
-                validCommand = true;
-                break;
-            
-                case "HELLO":    
+                case "HELLO" -> {
                     System.out.println("Gold to win: " + board.getWinningGold());
                     validCommand = true;
-                    break;
-            
-                case "GOLD":
+                }
+                case "GOLD" -> {
                     System.out.println("Gold Owned: " + player.getGold());
                     validCommand = true;
-                    break;
-
-                case "QUIT": 
+                }
+                case "QUIT" -> {
                     if (game.isGameWon(player, board)) {
                         System.out.println("WON");
                         System.out.println("Well done - you escaped the Dungeon of Doom with " + player.getGold() + " gold!");
                         System.exit(0);
-                    } 
-                    else {
+                    } else {
                         System.out.println("LOST");
                         System.exit(0);
                     }
-                    break;
-
-                case "MOVE N":
-                case "MOVE S":
-                case "MOVE E":
-                case "MOVE W":
+                }
+                case "MOVE N", "MOVE S", "MOVE E", "MOVE W" -> {
                     char direction = command.charAt(5);
                     Boolean moveResult = player.movePlayer(direction);
                     if (moveResult) {
                         System.out.println("Success");
-                    } 
-                    else {
+                    } else {
                         System.out.println("Fail");
                     }
                     validCommand = true;
-                    break;
-            
-                case "LOOK":
+                }
+                case "LOOK" -> {
                     System.out.print("Looking");
-                    char [][] visibleBoard = player.look();    
-                    for (int y = visibleBoard.length-1; y > 0; y--) {
+                    char[][] visibleBoard = player.look();
+                    for (int y = visibleBoard.length - 1; y > 0; y--) {
                         for (int x = 0; x < visibleBoard[y].length; x++) {
                             System.out.print(visibleBoard[x][y]);
                         }
                         System.out.println();
                     }
-                    validCommand = true; 
-                    break;
-            
-                default:
-                    System.out.println("Invalid Command. Please enter HELLO, LOOK, GOLD, PICKUP, MOVE N, MOVE S, MOVE E, MOVE W or QUIT");
-                    break;
+                    validCommand = true;
+                }
+                default -> System.out.println("Invalid Command. Please enter HELLO, LOOK, GOLD, PICKUP, MOVE N, MOVE S, MOVE E, MOVE W or QUIT");
             }
         }
     }

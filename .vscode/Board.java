@@ -3,12 +3,14 @@
  * The board is a 2D array of tiles onto which the player and bot are placed
  * The board is populated from a map file which is read in using the GameFile class
  */
-
 public class Board {
     private char[][] board;
     private int winningGold;
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
+    /**
+     * Constants for the different types of tiles on the board
+     */
     public static final char GOLD = 'G';
     public static final char WALL = '#';
     public static final char EMPTY = '.';
@@ -16,6 +18,7 @@ public class Board {
     public static final char PLAYER = 'P';
     public static final char BOT = 'B';
     public static final char UNKNOWN = '?';
+    
     private Player player;
     private BotPlayer bot;
 
@@ -25,11 +28,11 @@ public class Board {
         this.board = new char[width][height];
     }
 
-    public Board ()
-    {
+    public Board () {
         this.width = 0;
         this.height = 0;
     }
+    
     public int getWidth() {
         return width;
     }
@@ -46,8 +49,6 @@ public class Board {
      * Set a tile at a location on the board
      * @param location the location of the tile to be set
      * @param tile the type of tile this location should be set to
-     * @throws Exception if the location is out of bounds
-     * @throws Exception if the tile type is invalid
      */
      public void setTile(Location location, char tile) {
         board[location.getX()][location.getY()] = tile;
@@ -57,37 +58,42 @@ public class Board {
         this.winningGold = winningGold;
     }
 
+    /**
+     * Set the entire board
+     * @param board the 2D array of tiles to set the board to
+     */
     public void setBoard(char[][] board) {
         this.board = board;
     }
 
+    /**
+     * Set the bot player on the board
+     * @param bot the bot player to set
+     */
     public void setBot(BotPlayer bot){
         this.bot = bot;
     }
 
+    /**
+     * Set the human player on the board
+     * @param player the player to set
+     */
     public void setPlayer(Player player){
         this.player = player;
     }
 
+    /**
+     * @return the amount of gold required to win the game
+     */
     public int getWinningGold() {
         return winningGold;
     }   
 
     /**
-     * Populate the board with the contents of the map file
-     * The map file is a 2D array of characters
-     * The characters are converted to game tiles
-     * @throws Exception if the map file contains invalid characters
-     * @throws Exception if there is no exit
-     * @throws Exception if there is not enough gold
-     * @param mapFile
-     */
-
-    /**
      * Generates the portion of the board that is visible to the player
      * Overlays the player and bot on top of the board
      * @param location the location of the player
-     * @param see the distance the player can see around them
+     * @param see the distance the player can see around them in each direction
      * @return a 2D array of tiles representing the visible portion of the board
      */
     public char[][] viewBoard(Location location, int see) {
@@ -106,13 +112,10 @@ public class Board {
                 // If outside the board, set a wall character
                 if (isUnreachable(boardLocation)) {
                     visibleBoard[x][y] = WALL;
-                    continue;
                 } else if(boardLocation.equals(player.location)){ 
                     visibleBoard[x][y] = PLAYER;
-                    continue;
                 } else if(boardLocation.equals(bot.location)){
                     visibleBoard[x][y] = BOT;
-                    continue;
                 } else{
                     visibleBoard[x][y] = getTile(boardLocation);
                 }
@@ -126,11 +129,15 @@ public class Board {
      * @param location the location to check
      * @return true if the location is off the board, false otherwise
      */
-
     public Boolean isOutOfBounds (Location location){
         return (location.getX() < 0 || location.getX() >= width || location.getY() < 0 || location.getY() >= height);
     }
     
+    /**
+     * Check if a location is unreachable, either because it is off the board or because it is a wall
+     * @param location the location to check
+     * @return true if the location is unreachable, false otherwise
+     */
      public Boolean isUnreachable (Location location){
         return (isOutOfBounds(location) || getTile(location) == WALL);
     }

@@ -15,28 +15,44 @@ public class GameFile {
     private int height;
     private char[][] board;
     private String mapName;
-    private Scanner scanner;
+    private final Scanner scanner;
 
     public GameFile(Scanner scanner) {
         this.scanner = scanner;
     }
 
+    
+    /** 
+     * @return int the winning gold value for the map
+     */
     public int getWinningGold() {
         return winningGold;
     }
 
+    /** 
+     * @return int the width of the map
+     */
     public int getWidth() {
         return width;
     }   
 
+    /** 
+     * @return int the height of the map
+     */
     public int getHeight() {
         return height;
     }   
 
+    /** 
+     * @return char[][] the 2D array of characters representing the map
+     */
     public char[][] getBoard() {
         return board;
     }
 
+    /** 
+     * @return String the name of the map
+     */
     public String getMapName() {
         return mapName;
     }
@@ -48,8 +64,8 @@ public class GameFile {
  * The map data must contain at least one exit and enough gold to reach the winning gold value.
  * Assumes that the map data is rectangular.
  * @throws Exception if the file is not found
- * @throws Exception if the map name is not found
- * @throws Exception if the winning gold value is not found
+ * @throws Exception if the map name is not found in the file
+ * @throws Exception if the winning gold value is not found in the file
  * @throws Exception if the winning gold value is not an integer
  * @throws Exception if the map data contains invalid characters
  * @throws Exception if the total gold in the map is less than the winning gold value
@@ -80,7 +96,7 @@ public class GameFile {
             }
             winningGold = Integer.parseInt(winLine.split("win ")[1]);
                                     
-            List <String> mapLines = new ArrayList<String>();
+            List <String> mapLines = new ArrayList<>();
 
             while ((line = bufferedReader.readLine()) != null) {
                 mapLines.add(line);

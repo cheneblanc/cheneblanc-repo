@@ -1,25 +1,27 @@
 /** 
     * To represent a player in the game who move around the board, picking up gold before moving to the exit.
     * Note: BotPlayer extends this class
-    * @author Nigel Whiteoak
 */
-public class Player {
-/**
-    * @param board the board on which the player is located
-    * @param location the location of the player on the board
-    * @param gold the amount of gold the player has collected
-    * @param displayCharacter the character that represents the player when the board is viewed
-    * @param see the distance the player can see around them when they execute the LOOK command
- */    
+public class Player { 
+    /** The board on which the player is located */
     protected Board board;
+    /** The location of the player on the board */
     protected Location location;
     private int gold;
-    private int see = 2;
+    private final int see = 2;
 
+    /** 
+     * Constructor for the player class
+     * @param board the board on which the player is located
+     */
     public Player(Board board){ 
         this.board = board;
     }
 
+    
+    /** 
+     * @return int the amout of gold the player has collected
+     */
     public int getGold() {
         return gold;
     }
@@ -31,6 +33,9 @@ public class Player {
         return see;
     }
 
+    /** 
+     * Increment the player's gold count by 1
+     */
     public void addGold() {
         gold++;
     }
@@ -38,10 +43,7 @@ public class Player {
     /** 
      * Set the player's location to a random location on the board
      * Checks that the location is empty or an exit (not gold)
-     * @throws Exception if no locations are available
-     * @param board the board on which the player is located
      */
-
     public void setStartLocation(){
         location = new Location((int)(Math.random() * board.getWidth()), (int)(Math.random() * board.getHeight()));
         try{
@@ -52,7 +54,8 @@ public class Player {
                 tries++;
             }
             if (tries == maxTries){
-                throw new Exception("No locations available");
+                System.out.println("No valid starting location found");
+                System.exit(0);
             }
         }
         catch (Exception e){
