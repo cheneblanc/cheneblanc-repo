@@ -103,7 +103,7 @@ public class Board {
         char [][] visibleBoard = new char[viewDistance][viewDistance];
         
         for (int y = 0; y < viewDistance; y++) {
-            for (int x = 0; x <= viewDistance; x++) {
+            for (int x = 0; x < viewDistance; x++) {
                 
                 // Translate the x and y co-ordinates of the visible board array to the x and y co-ordinates of the actual board
                 int boardX = location.getX() + x - see;
