@@ -21,7 +21,6 @@ public class BotPlayer extends Player{
         this.knownBoard = new Board(board.getWidth(), board.getHeight());
         setStrategy();
         initialiseKnownBoard();
-        System.out.println("Bot strategy: " + strategy);
     }
     
     /**
@@ -133,14 +132,16 @@ public class BotPlayer extends Player{
     private Location findNearest(char targetType){
         Location nearest = null;
         int distance = board.getHeight() * board.getWidth(); // Maximum possible distance
+        int newDistance = board.getHeight() * board.getWidth();
         for (int x = 0; x < knownBoard.getWidth(); x++){
             for (int y = 0; y < knownBoard.getHeight(); y++){
                 if (knownBoard.getTile(new Location(x,y)) == targetType){
                     Location newNearest = new Location(x,y);
                     String newPath = findPath(newNearest);
-                    int newDistance = newPath.length();
+                    if (newPath != null){
+                        newDistance = newPath.length();
+                    }
                     if ((nearest == null && path != null) || (newDistance < distance)){
-                        System.out.println("Bot has found a new nearest " + targetType);
                         nearest = newNearest;
                         distance = newDistance;
                     }

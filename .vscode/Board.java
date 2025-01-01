@@ -98,10 +98,12 @@ public class Board {
      */
     public char[][] viewBoard(Location location, int see) {
         
-        char [][] visibleBoard = new char[see*2+1][see*2+1];
+        int viewDistance = see*2+1; // Width and height of the viewable board
+
+        char [][] visibleBoard = new char[viewDistance][viewDistance];
         
-        for (int y = 0; y <= see*2; y++) {
-            for (int x = 0; x <= see*2; x++) {
+        for (int y = 0; y < viewDistance; y++) {
+            for (int x = 0; x < viewDistance; x++) {
                 
                 // Translate the x and y co-ordinates of the visible board array to the x and y co-ordinates of the actual board
                 int boardX = location.getX() + x - see;
@@ -109,7 +111,6 @@ public class Board {
 
                 Location boardLocation = new Location(boardX, boardY);
 
-                // If outside the board, set a wall character
                 if (isUnreachable(boardLocation)) {
                     visibleBoard[x][y] = WALL;
                 } else if(boardLocation.equals(player.location)){ 
@@ -129,7 +130,7 @@ public class Board {
      * @param location the location to check
      * @return true if the location is off the board, false otherwise
      */
-    public Boolean isOutOfBounds (Location location){
+    public boolean isOutOfBounds (Location location){
         return (location.getX() < 0 || location.getX() >= width || location.getY() < 0 || location.getY() >= height);
     }
     
@@ -138,7 +139,7 @@ public class Board {
      * @param location the location to check
      * @return true if the location is unreachable, false otherwise
      */
-     public Boolean isUnreachable (Location location){
+     public boolean isUnreachable (Location location){
         return (isOutOfBounds(location) || getTile(location) == WALL);
     }
 

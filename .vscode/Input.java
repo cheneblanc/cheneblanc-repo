@@ -76,7 +76,6 @@ public class Input {
                     validCommand = true;
                 }
                 case "LOOK" -> {
-                    System.out.print("Looking");
                     char[][] visibleBoard = player.look();
                     for (int y = visibleBoard.length - 1; y > 0; y--) {
                         for (int x = 0; x < visibleBoard[y].length; x++) {
