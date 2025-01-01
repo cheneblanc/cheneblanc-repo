@@ -9,38 +9,78 @@ public class Board {
     private final int width;
     private final int height;
     /**
-     * Constants for the different types of tiles on the board
+     * Constant for tile to represent gold
      */
     public static final char GOLD = 'G';
+    /**
+     * Constant for tile to represent wall
+     */
     public static final char WALL = '#';
+    /**
+     * Constant for tile to represent empty tiles
+     */
     public static final char EMPTY = '.';
+    /**
+     * Constant for tile to represent an exit
+     */
     public static final char EXIT = 'E';
+    /**
+     * Constant for tile to represent the player
+     */
     public static final char PLAYER = 'P';
+    /**
+     * Constant for tile to represent the bot
+     */
     public static final char BOT = 'B';
+    /**
+     * Constant for tile to represent an uknown tile (used by the bot in generating their knowledge of the board)
+     */
     public static final char UNKNOWN = '?';
     
     private Player player;
     private BotPlayer bot;
 
+    /**
+     * Constructor for the board
+     * @param width - the width of the game board in number of tiles
+     * @param height - the height of the game board in number of tiles
+     */
     public Board(int width, int height) {
         this.width = width;
         this.height = height;
         this.board = new char[width][height];
     }
 
+    /**
+     * Zero agruments constructor for the board
+     * Note as default size is set to 0, the board will need to be set using the setBoard method
+     */
     public Board () {
         this.width = 0;
         this.height = 0;
     }
     
+    /**
+     * Gets the width of the board
+     * @return the width of the board
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * Gets the height of the board
+     * @return the height of the board
+     */
     public int getHeight() {
         return height;
     }
     
+    /**
+     * Gets the tile type of te board at the specificed location
+     * @param location the location to get the tile type of
+     * @return char of the board at the location
+     */
     public char getTile(Location location) {
         return board[location.getX()][location.getY()];
     }
@@ -54,6 +94,10 @@ public class Board {
         board[location.getX()][location.getY()] = tile;
     }
 
+    /**
+    * Sets the quantity of gold required to win the game
+    * @param winningGold the quantity of gold required to win the game
+    */        
     public void setWinningGold(int winningGold) {
         this.winningGold = winningGold;
     }
@@ -83,7 +127,8 @@ public class Board {
     }
 
     /**
-     * @return the amount of gold required to win the game
+     * Returns the amount of gold required to win the game
+     * @return the amount of gold
      */
     public int getWinningGold() {
         return winningGold;

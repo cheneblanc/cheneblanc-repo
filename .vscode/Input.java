@@ -1,11 +1,11 @@
+
+
+import java.util.Scanner;
 /**
  * Handles terminal inputs and outputs from the human player during the game
  * Validates the inputs and converts them into the game commands
  * Prints out the relevant responses to these commands
  */
-
-import java.util.Scanner;
-
 public class Input {
         
     private final Game game;
@@ -13,6 +13,13 @@ public class Input {
     private final Player player;
     private final Scanner scanner;
 
+    /**
+     * Constructor for the Input class
+     * @param game the game object
+     * @param board the board object
+     * @param player the player object
+     * @param scanner the scanner object for reading the input
+     */
     public Input(Game game, Board board, Player player, Scanner scanner) {
         this.game = game;   
         this.board = board;

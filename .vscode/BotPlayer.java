@@ -1,10 +1,9 @@
-/**
- * Extends the Player class to create a bot that can play the game autonomously.
- */ 
-
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Extends the Player class to create a bot that can play the game autonomously.
+ */ 
 public class BotPlayer extends Player{
     private String strategy; // LOOTER (tries to get gold, then exit) or CHASER (looks for player then chases them)
     private char targetType; //(the type of tile the bot is currently targeting)
@@ -14,6 +13,8 @@ public class BotPlayer extends Player{
     
     /**
      * Constructor for the BotPlayer class.
+     * Has an additional board object to represent the bot's knowledge of the game board.
+     * Sets the bot's strategy randomly between chaser and looter.
      * @param board - the game board
      */
     public BotPlayer(Board board) {
@@ -38,6 +39,7 @@ public class BotPlayer extends Player{
 
     
     /** 
+     * Get's the bot player's strategy
      * @return String containing the strategy of the bot
      */
     public String getStrategy(){
@@ -75,7 +77,6 @@ public class BotPlayer extends Player{
      * Determines the logic for the action that the bot will take
      * Works using the concept of a target
      * If the bot has no target, it will look to try to find one
-     * 
      */
      public void decideAction(){
         if (target == null){
@@ -186,6 +187,7 @@ public class BotPlayer extends Player{
      * If the cell in that direction is reachable, append the direction required to reach it to the current location's string and store it in that cell
      * If the location is the target, return the string of directions to get there
      * Move on to the next location in the queue
+     * @param destination - the location to find a path to
      * @return the String containing the set of directions to reach the target from the current location if the target is found, otherwise null
      */
     public String findPath(Location destination) {

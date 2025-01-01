@@ -1,12 +1,11 @@
-/**
- * Imports the board data from the file, extracting the name, the winning gold amount and the board map.
- */
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Imports the board data from the file, extracting the name, the winning gold amount and the board map.
+ */
 public class GameFile {
     private String file;
     private String line;
@@ -17,12 +16,16 @@ public class GameFile {
     private String mapName;
     private final Scanner scanner;
 
+    /**
+     * Constructor for the GameFile class
+     * @param scanner the scanner object for reading the input
+     */
     public GameFile(Scanner scanner) {
         this.scanner = scanner;
     }
 
-    
     /** 
+     * Gets the winning gold value for the map from the gamefile
      * @return int the winning gold value for the map
      */
     public int getWinningGold() {
@@ -30,6 +33,7 @@ public class GameFile {
     }
 
     /** 
+     * Gets the width of the map in the game file in number of tiles
      * @return int the width of the map
      */
     public int getWidth() {
@@ -37,6 +41,7 @@ public class GameFile {
     }   
 
     /** 
+     * Gets the height of the map int the gamefile in number of tiles
      * @return int the height of the map
      */
     public int getHeight() {
@@ -44,6 +49,7 @@ public class GameFile {
     }   
 
     /** 
+     * Gets the 2D array of characters representing the map from the gamefile
      * @return char[][] the 2D array of characters representing the map
      */
     public char[][] getBoard() {
@@ -51,6 +57,7 @@ public class GameFile {
     }
 
     /** 
+     * Gets the maps ame from the gamefile
      * @return String the name of the map
      */
     public String getMapName() {
