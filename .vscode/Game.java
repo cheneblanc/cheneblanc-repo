@@ -13,11 +13,8 @@ public class Game {
      * @param args - default main method parameter
     */
     public static void main(String[] args) {
-
         Game game = new Game();
-
         Scanner scanner = new Scanner(System.in);
-
         Board board = new Board();
 
         /* Populate the board from the game file; catch exceptions and ask for a new file is the file isn't valid */
@@ -36,6 +33,7 @@ public class Game {
             }
 
         }
+        
         Player player1 = new Player(board); // Create the player
         BotPlayer bot = new BotPlayer(board); // Create the bot
         

@@ -2,7 +2,6 @@
  * Class for representing a location on the board
  * (0,0) represents the lower left corner of the board
  */
-
 public class Location {
     
     private int x;
@@ -32,7 +31,6 @@ public class Location {
             }
         }
     }
-    
     
     /** 
      * Gets the location of the object

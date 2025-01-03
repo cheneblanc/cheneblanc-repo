@@ -1,6 +1,5 @@
-
-
 import java.util.Scanner;
+
 /**
  * Handles terminal inputs and outputs from the human player during the game
  * Validates the inputs and converts them into the game commands
@@ -34,7 +33,6 @@ public class Input {
      * Executes the command using the player methods
      * Prints out the relevant response to the command
      */
-
      public void getInput() {
         
         String command;

@@ -36,8 +36,7 @@ public class BotPlayer extends Player{
             default -> "chaser";
         };
     }
-
-    
+ 
     /** 
      * Get's the bot player's strategy
      * @return String containing the strategy of the bot
@@ -73,6 +72,7 @@ public class BotPlayer extends Player{
             default -> {}
         }
     }
+
     /**
      * Determines the logic for the action that the bot will take
      * Works using the concept of a target
@@ -98,9 +98,7 @@ public class BotPlayer extends Player{
         } else {
             moveToTarget();
         }
-    }
-
-    
+    }  
     
     /**
      * Allows the bot to perform the LOOK action and remember the locations of the player, the nearest gold and the nearest exit (if seen).
@@ -129,7 +127,6 @@ public class BotPlayer extends Player{
      * @param targetType - the type of tile to find the nearest location of
      * @return the Location of the nearest tile of the given type
      */
-
     private Location findNearest(char targetType){
         Location nearest = null;
         int distance = board.getHeight() * board.getWidth(); // Maximum possible distance
@@ -159,7 +156,6 @@ public class BotPlayer extends Player{
      * Looters will target the exit if they have enough gold to win the game.
      * @return the Location of the bot's next target
      */
-
     public Location getNewTarget(){
         targetType = switch (strategy) {
             case "chaser" -> Board.PLAYER;
@@ -203,7 +199,7 @@ public class BotPlayer extends Player{
             if (current.equals(destination)) {
                 return directions[current.getX()][current.getY()];
             }
-            
+    
             char[] possibleMoves = {'W', 'E', 'N', 'S'};
             for (char direction : possibleMoves) {
                 Location newLoc = new Location(current.getX(), current.getY());
@@ -231,7 +227,7 @@ public class BotPlayer extends Player{
     */
     public Location getDefaultTarget(){
         Location newTarget;
-        
+
         int random = (int) (Math.random() * 4);
         newTarget = switch (random) {
             case 0 -> new Location(location.getX() + getSee(), location.getY());
@@ -250,8 +246,7 @@ public class BotPlayer extends Player{
 
     /**
      * Executes a look and uses the information to identify a target and plan a route to it.
-     */
-    
+     */   
     private void planRoute(){
         botLook();
         getNewTarget();
@@ -259,8 +254,8 @@ public class BotPlayer extends Player{
         while (this.path == null){
             target = getDefaultTarget();
             path=findPath(target);
-        }       }
-
+        }       
+    }
 
     /**
      * Moves the bot to the target location via the path found by the findPath method.

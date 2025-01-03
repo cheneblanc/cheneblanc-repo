@@ -1,7 +1,5 @@
 {
-    "java.debug.settings.onBuildFailureProceed": true,
     "java.project.sourcePaths": [
-        ".vscode",
-        "Programming CW2"
+        ".vscode"
     ]
 }
