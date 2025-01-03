@@ -2,7 +2,6 @@
  * Class for representing a location on the board
  * (0,0) represents the lower left corner of the board
  */
-
 public class Location {
     
     private int x;
@@ -33,15 +32,16 @@ public class Location {
         }
     }
     
-    
     /** 
-     * @return Location the location of the object
+     * Gets the location of the object
+     * @return the location of the object
      */
     public Location getLocation() {
         return this;
     }           
     
     /** 
+     * Gets the x coordinate of the location where (0,0) is the lower left corner of the board
      * @return int the x coordinate of the location
      */
     public int getX() {
@@ -49,6 +49,7 @@ public class Location {
     }
 
     /** 
+     * Gets the y coordinate of the location where (0,0) is the lower left corner of the board
      * @return int the y coordinate of the location
      */
     public int getY() {

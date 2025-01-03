@@ -20,6 +20,7 @@ public class Player {
 
     
     /** 
+     * Gets tje amount of gold the player has collected
      * @return int the amout of gold the player has collected
      */
     public int getGold() {
@@ -27,6 +28,7 @@ public class Player {
     }
 
     /** 
+     * Get the distance the player can see from them when they use the LOOK command, in number of tiles
      * @return the distance the player can see around them when they use the LOOK command
      */
     public int getSee(){
@@ -66,10 +68,9 @@ public class Player {
     }
 
     /** 
-     * Move the player one square north on the board
-     * Checks that the player is not at the top edge of the board
-     * If not, moves the player one square north
-     * If the move lands the player on wall, moves the player back to their original location
+     * Move the player one square on the board
+     * Checks that moving to the new location is possible
+     * @param direction the direction the player wants to move in
      * @return true if the move is successful, false if the player is at the edge of the board or there is a wall in the way
      */
     
